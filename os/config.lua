@@ -13,8 +13,8 @@ return {
   },
   settings = {
     refresh_delay = 0.5,
-    display_name = "Unknown",
     peripheral_module_ids = {},
+    display_name = "Unknown",
     night_hour = 19,
     day_hour = 5,
     max_msg_archive_file_size = 5120,

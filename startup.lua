@@ -1,1 +1,1 @@
-shell.run("midnightos_v1.lua")
+shell.run("midnightos.lua")

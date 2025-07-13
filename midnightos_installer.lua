@@ -1,27 +1,23 @@
 -- Midnight-OS Installer
 
 -- variables
-local config = {
-    git_path = {
-        [ "midnightos.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/midnightos.lua",
-        [ "os/app/chat.lua" ] = "WEM384ch",
-        [ "os/lib/gps.lua" ] = "cuMBg8dM",
-        [ "os/app/terminal.lua" ] = "ne0haYJr",
-        [ "os/app/calculator.lua" ] = "QwdZzUAK",
-        [ "os/app/info.lua" ] = "mAXqSnCa",
-        [ "os/app/waystone.lua" ] = "9tkZFF1c",
-        [ "os/lib/basalt/bext.lua" ] = "q8VTEJxk",
-        [ "os/lib/api.lua" ] = "8mzvsFNv",
-        [ "startup.lua" ] = "HFTSqhvd",
-        [ "os/config.lua" ] = "0vfcyq9u",
-        [ "os/const.lua" ] = "r17pY7cP",
-        [ "os/lib/metrics.lua" ] = "ujvQ0QU8",
-        [ "os/lib/ext.lua" ] = "ySk6eWyJ",
-        [ "os/lib/basalt/main.lua" ] = "g4npwytV",
-    },
+local git_path = {
+    [ "os/lib/api.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/lib/api.lua",
+    [ "os/app/chat.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/app/chat.lua",
+    [ "os/lib/basalt/bext.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/lib/basalt/bext.lua",
+    [ "os/lib/metrics.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/lib/metrics.lua",
+    [ "os/lib/gps.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/lib/gps.lua",
+    [ "os/lib/ext.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/lib/ext.lua",
+    [ "os/app/waystone.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/app/waystone.lua",
+    [ "midnightos.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/midnightos.lua",
+    [ "os/app/info.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/app/info.lua",
+    [ "startup.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/startup.lua",
+    [ "os/config.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/config.lua",
+    [ "os/app/calculator.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/app/calculator.lua",
+    [ "os/app/terminal.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/app/terminal.lua",
+    [ "os/const.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/const.lua",
+    [ "os/lib/basalt/main.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/lib/basalt/main.lua",
 }
-
-local failed_files = {}
 
 -- main
 if not http then
@@ -31,47 +27,46 @@ if not http then
 end
 
 print("\nInstalling...")
-for file_path, git_path in pairs(config.git_path) do
-    if code ~= "failed" then
-        shell.run("pastebin get " .. code .. " " .. file_path)
+for file_path, git_file_path in pairs(git_path) do
+    local response = http.get(git_file_path)
+    if response then
+        local file = fs.open(file_path, "w")
+        if file then
+            file.write(response.readAll())
+            file.close()
+            print("Installed: " .. file_path)
+        else
+            printError("Failed to open file: " .. file_path)
+        end
     else
-        local reason = "No pastebin code found"
-        printError(reason.." for: "..file_path)
-        failed_files[#failed_files + 1] = {file_path, reason}
+        printError("Failed to download: " .. file_path)
     end
 end
 print("\nInstallation complete.")
 
-if #failed_files == 0 then
-    print("All files installed successfully.")
+local api = require("os/lib/api")
+local config = require("os/config")
 
-    local api = require("os/lib/api")
-    local os_config = require("os/config")
+print("\nOS Config setup")
+term.write("Display name: ")
+config.settings.display_name = tostring(read())
 
-    print("\nOS Config setup")
-    term.write("Display name: ")
-    os_config.settings.display_name = tostring(read())
+local offset
+repeat
+    term.write("UTC offset (in hours): ")
+    local input = read()
+    offset = tonumber(input)
+    if not offset then
+        printError("Invalid value.")
+    end
+until offset
+config.settings.hours_off_set_from_utc = offset
+api.updateConfig(config)
 
-    local offset
-    repeat
-        term.write("utc offset (in hours): ")
-        local input = read()
-        offset = tonumber(input)
-        if not offset then
-            printError("Invalid value.")
-        end
-    until offset
-    os_config.settings.hours_off_set_from_utc = offset
-
-    api.updateConfig(os_config)
-
-    print("\nrebooting in 3 seconds...")
-    sleep(3)
-    shell.run("reboot")
-    return
+print()
+for i = 3, 1, -1 do
+    print("rebooting in "..i)
+    sleep(1)
 end
 
-print("\nThe following files have failed to install:")
-for file, reason in pairs(failed_files) do
-    printError(file..": "..reason)
-end
+shell.run("reboot")
