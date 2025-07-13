@@ -66,6 +66,19 @@ os/
 - Utilities and libraries are in `os/lib/`.
 - The Basalt UI library is minified in `os/lib/basalt/main.lua`.
 
+## Uninstallation
+
+To completely remove Midnight-OS from your computer:
+
+1. Run the uninstaller:
+   ```
+   pastebin run 9xxJFxQC
+   ```
+2. Confirm the prompt to proceed.
+3. The script will delete all Midnight-OS files and folders, including `os/`, `startup.lua`, and `midnightos.lua`.
+
+**Warning:** This action is irreversible and will remove all OS files, including any data stored in `os/appdata/`.
+
 ## Credits
 
 - [Basalt UI Library](https://github.com/Pyroxenium/Basalt2)
