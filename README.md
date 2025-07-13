@@ -45,7 +45,7 @@ os/
 1. **Enable HTTP API** in your CC: Tweaked config (`http.enabled=true`).
 2. Download and run the installer:
    ```
-   pastebin run 2SWPXJn8
+   pastebin get 2SWPXJn8 midnightos_installer
    ```
    Or copy `midnightos_installer.lua` to your computer and run:
    ```
