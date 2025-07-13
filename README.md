@@ -27,21 +27,17 @@ os/
     api.lua                   # API for config and system functions
     ext.lua                   # Utility functions (math, string, file, etc.)
     gps.lua                   # GPS utilities
-    metrics.lua               # Metrics and benchmarking
+    metrics.lua               # Data processing
     basalt/
       bext.lua                # Basalt UI extensions
-      main.lua                # Basalt UI library (minified)
+      main.lua                # Basalt UI library
   app/
     calculator.lua            # Calculator app
     chat.lua                  # Chat app (with user/message storage)
     info.lua                  # Info dashboard app
     terminal.lua              # Terminal emulator app
-    waystone.lua              # Waystone navigation app
+    waystone.lua              # Waystone navigation app (WIP)
   appdata/                    # App data storage (chat users/messages, etc.)
-dev/
-  upload/
-    main.lua                  # Upload utility for development
-    git_path.lua              # GitHub file path mapping
 ```
 
 ## Installation
