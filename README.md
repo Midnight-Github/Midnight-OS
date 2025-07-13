@@ -45,7 +45,7 @@ os/
 1. **Enable HTTP API** in your CC: Tweaked config (`http.enabled=true`).
 2. Download and run the installer:
    ```
-   pastebin run <installer_pastebin_code>
+   pastebin run 2SWPXJn8
    ```
    Or copy `midnightos_installer.lua` to your computer and run:
    ```
@@ -70,8 +70,8 @@ os/
 
 - [Basalt UI Library](https://github.com/Pyroxenium/Basalt2)
 - [CC: Tweaked](https://tweaked.cc/)
-- Midnight-OS contributors
+- Midnight-OS contributors: Midnight-Github
 
 ## License
 
-See [LICENSE](LICENSE) for details.
+See [LICENSE](LICENSE) (WIP) for details.
