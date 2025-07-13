@@ -2,8 +2,8 @@
 
 -- variables
 local config = {
-    pastebin_code = {
-        [ "midnightos_v1.lua" ] = "uZebGcLf",
+    git_path = {
+        [ "midnightos.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/midnightos.lua",
         [ "os/app/chat.lua" ] = "WEM384ch",
         [ "os/lib/gps.lua" ] = "cuMBg8dM",
         [ "os/app/terminal.lua" ] = "ne0haYJr",
@@ -25,13 +25,13 @@ local failed_files = {}
 
 -- main
 if not http then
-    printError("Pastebin requires the http API, but it is not enabled")
+    printError("http is required for OS installation, but it is not enabled")
     printError("Set http.enabled to true in CC: Tweaked's server config")
     return
 end
 
-print("Installing...")
-for file_path, code in pairs(config.pastebin_code) do
+print("\nInstalling...")
+for file_path, git_path in pairs(config.git_path) do
     if code ~= "failed" then
         shell.run("pastebin get " .. code .. " " .. file_path)
     else
