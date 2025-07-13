@@ -1,6 +1,7 @@
 -- Midnight-OS Installer
 
 -- variables
+local failed_files = {}
 local git_path = {
     [ "os/lib/api.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/lib/api.lua",
     [ "os/app/chat.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/app/chat.lua",
@@ -37,11 +38,23 @@ for file_path, git_file_path in pairs(git_path) do
             print("Installed: " .. file_path)
         else
             printError("Failed to open file: " .. file_path)
+            table.insert(failed_files, file_path)
         end
     else
         printError("Failed to download: " .. file_path)
+        table.insert(failed_files, file_path)
     end
 end
+
+if #failed_files > 0 then
+    printError("\nSome files failed to install:")
+    for _, file in ipairs(failed_files) do
+        printError(file)
+    end
+    printError("\nPlease install them manually or try again.")
+    return
+end
+
 print("\nInstallation complete.")
 
 local api = require("os/lib/api")
