@@ -3,6 +3,7 @@
 local files_to_delete = {
     "startup.lua",
     "os",
+    "midnightos.lua"
 }
 
 local function deletePath(path)
