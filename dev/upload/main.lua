@@ -1,10 +1,8 @@
 -- Midnight-OS Uploader
 -- Uploades os files to pastebin.com and generates a config file.
 
--- imports
-local git_path = require("git_path")
-
 -- variables
+local git_path = {}
 local git_common_path = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/"
 local blacklist = {
     ".git",
