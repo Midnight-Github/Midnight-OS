@@ -7,7 +7,6 @@ local git_path = {
     [ "os/app/chat.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/app/chat.lua",
     [ "os/lib/basalt/bext.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/lib/basalt/bext.lua",
     [ "os/lib/metrics.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/lib/metrics.lua",
-    [ "os/lib/gps.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/lib/gps.lua",
     [ "os/lib/ext.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/lib/ext.lua",
     [ "os/app/waystone.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/app/waystone.lua",
     [ "midnightos.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/midnightos.lua",
