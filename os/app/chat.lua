@@ -179,7 +179,7 @@ local function chatApp(parent, appdata_path, callback)
         :setBackground("{self.clicked and colors.lightGray or colors.blue}")
 
     local title_label = title_frame:addLabel()
-        :setPosition(ext.getCenterPos(title_frame:getWidth(), #"Global"), 1)
+        :setPosition(ext.getCenterPos(title_frame:getWidth(), #"Global") - chat_select_button:getWidth() + 1, 1)
         :setText(current_group:sub(1, 1):upper() .. current_group:sub(2))
         :setForeground(colors.white)
 
