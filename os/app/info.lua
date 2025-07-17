@@ -45,43 +45,47 @@ local function infoApp(parent)
         end
     end
 
-    local function addTitleBar(parent, y, width, title)
+    local function addTitleBar(parent, y, title)
         parent:addLabel()
-            :setPosition(ext.getCenterPos(width, #title), y)
+            :setPosition(ext.getCenterPos(parent:getWidth(), #title), y)
             :setText(title)
             :setBackground(colors.black)
             :setForeground(colors.white)
     end
 
-    local function addHeadingBar(parent, x, y, width, left_heading, mid_heading, right_heading, left_squeeze_ratio, right_squeeze_ratio)
+    local function addHeadingBar(parent, x, y, left_heading, mid_heading, right_heading, left_squeeze_ratio, right_squeeze_ratio)
         local heading_frame = parent:addFrame()
             :setPosition(x, y)
-            :setSize(width, 1)
+            :setSize(parent:getWidth(), 1)
             :setBackground(colors.black)
 
         local left_label = heading_frame:addLabel()
-            :setPosition(ext.getCenterPos(width/left_squeeze_ratio, #left_heading), 1)
+            :setPosition(ext.getCenterPos(parent:getWidth()/left_squeeze_ratio, #left_heading), 1)
             :setText(left_heading)
             :setForeground(colors.lightGray)
             :setSize(#left_heading, 1)
 
         local mid_label = heading_frame:addLabel()
-            :setPosition(ext.getCenterPos(width, #mid_heading), 1)
+            :setPosition(ext.getCenterPos(parent:getWidth(), #mid_heading), 1)
             :setText(mid_heading)
             :setForeground(colors.lightGray)
             :setSize(#mid_heading, 1)
 
+        -- Dynamically center right heading within right section
+        local section_width = parent:getWidth() / right_squeeze_ratio
+        local section_start = parent:getWidth() - section_width + 1
+        local right_label_pos = section_start + ext.getCenterPos(section_width, #right_heading)
         local right_label = heading_frame:addLabel()
-            :setPosition(width - ext.getCenterPos(width/right_squeeze_ratio, #right_heading) - #right_heading + 2, 1)
+            :setPosition(right_label_pos, 1)
             :setText(right_heading)
             :setForeground(colors.lightGray)
             :setSize(#right_heading, 1)
     end
 
-    local function addDataBar(parent, x, y, width, left_key, mid_key, right_key)
+    local function addDataBar(parent, x, y, left_key, mid_key, right_key)
         local data_frame = parent:addFrame()
             :setPosition(1, 3)
-            :setSize(width, 1)
+            :setSize(parent:getWidth(), 1)
             :setBackground(colors.gray)
 
         data_label[left_key] = data_frame:addLabel()
@@ -97,54 +101,51 @@ local function infoApp(parent)
             :setForeground(colors.white)
     end
 
-    local function addOptionBar(parent, x, y, width)
+    local function addOptionBar(parent, x, y)
         local data_frame = parent:addFrame()
             :setPosition(x, y)
-            :setSize(width, 6)
+            :setSize(parent:getWidth(), 6)
             :setBackground(colors.black)
 
         local data_keys = ext.getKeys(data_info)
 
+        local section_width = parent:getWidth() / 3
         local left_option = data_frame:addDropdown()
-            :setPosition(ext.getCenterPos(width/3, width/3), 1)
+            :setPosition(1, 1)
             :setBackground(colors.gray)
             :setForeground(colors.white)
-            :setSize(width/3 - 1, 1)
+            :setSize(section_width - 1, 1)
             :addItem({text = "None", args = {data_key = ""}})
-            
         addOptions(left_option, data_keys)
         left_option:selectItem(ext.indexOf(data_keys, config.status_bar_info.left))
-
         left_option:onSelect(function(self, event, item)
             config.status_bar_info.left = item.args.data_key
             api.updateConfig(config)
         end)
 
         local mid_option = data_frame:addDropdown()
-            :setPosition(ext.getCenterPos(width, width/3), 1)
+            :setPosition(ext.getCenterPos(parent:getWidth(), section_width), 1)
             :setBackground(colors.gray)
             :setForeground(colors.white)
-            :setSize(width/3 - 1, 1)
+            :setSize(section_width - 1, 1)
             :addItem({text = "None", args = {data_key = ""}})
-            
         addOptions(mid_option, data_keys)
         mid_option:selectItem(ext.indexOf(data_keys, config.status_bar_info.mid))
-
         mid_option:onSelect(function(self, event, item)
             config.status_bar_info.mid = item.args.data_key
             api.updateConfig(config)
         end)
 
+        -- Dynamically center right dropdown within right section
+        local right_section_start = parent:getWidth() - section_width
         local right_option = data_frame:addDropdown()
-            :setPosition(width - ext.getCenterPos(width/3, width/3) - width/3 + 2, 1)
+            :setPosition(right_section_start + ext.getCenterPos(section_width, section_width), 1)
             :setBackground(colors.gray)
             :setForeground(colors.white)
-            :setSize(width/3 - 1, 1)
+            :setSize(section_width - 1, 1)
             :addItem({text = "None", args = {data_key = ""}})
-            
         addOptions(right_option, data_keys)
         right_option:selectItem(ext.indexOf(data_keys, config.status_bar_info.right))
-
         right_option:onSelect(function(self, event, item)
             config.status_bar_info.right = item.args.data_key
             api.updateConfig(config)
@@ -165,7 +166,10 @@ local function infoApp(parent)
                     elseif ext.contains(mid_data_key, key) then
                         data_label[key]:setPosition(ext.getCenterPos(frame_width, #new_data), 1)
                     elseif ext.contains(right_data_key, key) then
-                        data_label[key]:setPosition(frame_width - ext.getCenterPos(frame_width/squeeze_ratio, #new_data) - #new_data + 2, 1)
+                        -- Dynamically center within right section
+                        local section_width = frame_width / squeeze_ratio
+                        local section_start = frame_width - section_width + 1
+                        data_label[key]:setPosition(section_start + ext.getCenterPos(section_width, #new_data), 1)
                     end
                     data_label[key]:setText(new_data)
                 elseif new_data ~= old_data then
@@ -182,20 +186,19 @@ local function infoApp(parent)
         :setBackground(colors.black)
     bext.addVarticalScrolling(main_frame)
 
-    local width = main_frame:getWidth() - 2
     local zipped = ext.zip(section_title, left_data_key, mid_data_key, right_data_key)
     local y = 1
     for i = 1, #zipped do
         local title, left_key, mid_key, right_key = table.unpack(zipped[i])
 
         if title ~= "" then
-            addTitleBar(main_frame, y, width, title)
+            addTitleBar(main_frame, y, title)
             y = y + 2
         end
 
         local data_frame = main_frame:addFrame()
             :setPosition(2, y)
-            :setSize(width, 3)
+            :setSize(main_frame:getWidth() - 2, 3)
             :setBackground(colors.black)
 
         local left_heading = data_info[left_key].heading
@@ -203,13 +206,13 @@ local function infoApp(parent)
         local mid_heading = data_info[mid_key].heading
         local right_heading = data_info[right_key].heading
         local right_squeeze_ratio = data_info[right_key].squeeze_ratio
-        addHeadingBar(data_frame, 1, 1, width, left_heading, mid_heading, right_heading, left_squeeze_ratio, right_squeeze_ratio)
-        addDataBar(data_frame, 1, 3, width, left_key, mid_key, right_key)
+        addHeadingBar(data_frame, 1, 1, left_heading, mid_heading, right_heading, left_squeeze_ratio, right_squeeze_ratio)
+        addDataBar(data_frame, 1, 3, left_key, mid_key, right_key)
         y = y + 4
     end
-    addTitleBar(main_frame, y + 1, width, "- Status Display -")
-    addHeadingBar(main_frame, 2, y + 3, width, "Left", "Mid", "Right", 3, 3)
-    addOptionBar(main_frame, 2, y + 5, width)
+    addTitleBar(main_frame, y + 1, "- Status Display -")
+    addHeadingBar(main_frame, 2, y + 3, "Left", "Mid", "Right", 3, 3)
+    addOptionBar(main_frame, 2, y + 5)
 
     app.update = updateData
 
