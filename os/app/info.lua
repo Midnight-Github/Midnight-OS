@@ -183,7 +183,6 @@ local function infoApp(parent)
     bext.addVarticalScrolling(main_frame)
 
     local width = main_frame:getWidth() - 2
-    width = 24
     local zipped = ext.zip(section_title, left_data_key, mid_data_key, right_data_key)
     local y = 1
     for i = 1, #zipped do
