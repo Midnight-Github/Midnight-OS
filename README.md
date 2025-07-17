@@ -17,8 +17,8 @@ Midnight-OS is a modular, extensible operating system for [CC: Tweaked](https://
 ```
 midnightos.lua                # Main OS launcher
 startup.lua                   # Startup script
-midnightos_installer.lua      # Installer script
-midnightos_uninstaller.lua    # Uninstaller script
+installer.lua                 # Installer script
+uninstaller.lua               # Uninstaller script
 about.txt                     # About info
 os/
   config.lua                  # User and system config
@@ -26,7 +26,6 @@ os/
   lib/
     api.lua                   # API for config and system functions
     ext.lua                   # Utility functions (math, string, file, etc.)
-    gps.lua                   # GPS utilities
     metrics.lua               # Data processing
     basalt/
       bext.lua                # Basalt UI extensions
@@ -45,11 +44,11 @@ os/
 1. **Enable HTTP API** in your CC: Tweaked config (`http.enabled=true`).
 2. Download and run the installer:
    ```
-   pastebin get 2SWPXJn8 midnightos_installer
+   pastebin get Rrv6fxDg installer
    ```
    Or copy `midnightos_installer.lua` to your computer and run:
    ```
-   midnightos_installer.lua
+   installer.lua
    ```
 3. Follow the prompts to set up your display name and time zone.
 
@@ -70,9 +69,9 @@ os/
 
 To completely remove Midnight-OS from your computer:
 
-1. Run the uninstaller:
+1. Run the uninstaller from terminal:
    ```
-   pastebin run 9xxJFxQC
+   uninstaller.lua
    ```
 2. Confirm the prompt to proceed.
 3. The script will delete all Midnight-OS files and folders, including `os/`, `startup.lua`, and `midnightos.lua`.
