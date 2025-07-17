@@ -3,7 +3,8 @@
 local files_to_delete = {
     "startup.lua",
     "os",
-    "midnightos.lua"
+    "midnightos.lua",
+    "uninstaller.lua"
 }
 
 local function deletePath(path)

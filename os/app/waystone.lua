@@ -1,3 +1,5 @@
+local ext = require("os/lib/ext")
+
 local function waystoneApp(parent)
     -- Variables
     local app = {}
@@ -20,10 +22,11 @@ local function waystoneApp(parent)
     local add_waystone_frame = main_frame:addFrame()
         :setPosition(1, main_frame:getHeight())
         :setSize(main_frame:getWidth(), 1)
-        :setBackground(colors.red)
+        :setBackground(colors.black)
 
     local name_box_size = math.floor(add_waystone_frame:getWidth() * 2 / 5 - 3)
     local coord_box_size = math.min(math.floor((add_waystone_frame:getWidth() * 2 / 5) / 3), 7)
+    local coord_input_indent = ext.repeatString(" ", ext.getCenterPos(coord_box_size, 1))
 
     local input_name = add_waystone_frame:addInput()
         :setPosition(1, 1)
@@ -31,7 +34,7 @@ local function waystoneApp(parent)
         :setBackground(colors.gray)
         :setFocusedBackground(colors.gray)
         :setForeground(colors.white)
-        :setPlaceholder("Name")
+        :setPlaceholder(ext.repeatString(" ", ext.getCenterPos(name_box_size, 4)).."Name")
         :setPlaceholderColor(colors.lightGray)
 
     local input_x = add_waystone_frame:addInput()
@@ -40,7 +43,7 @@ local function waystoneApp(parent)
         :setBackground(colors.gray)
         :setFocusedBackground(colors.gray)
         :setForeground(colors.white)
-        :setPlaceholder(" x")
+        :setPlaceholder(coord_input_indent.."x")
         :setPlaceholderColor(colors.lightGray)
 
     local input_y = add_waystone_frame:addInput()
@@ -49,7 +52,7 @@ local function waystoneApp(parent)
         :setBackground(colors.gray)
         :setFocusedBackground(colors.gray)
         :setForeground(colors.white)
-        :setPlaceholder(" y")
+        :setPlaceholder(coord_input_indent.."y")
         :setPlaceholderColor(colors.lightGray)
 
     local input_z = add_waystone_frame:addInput()
@@ -58,8 +61,22 @@ local function waystoneApp(parent)
         :setBackground(colors.gray)
         :setFocusedBackground(colors.gray)
         :setForeground(colors.white)
-        :setPlaceholder(" z")
+        :setPlaceholder(coord_input_indent.."z")
         :setPlaceholderColor(colors.lightGray)
+
+    local submit_button = add_waystone_frame:addButton()
+        :setPosition(add_waystone_frame:getWidth(), 1)
+        :setSize(1, 1)
+        :setText("+")
+        :setBackground("{self.clicked and colors.lightGray or colors.black}")
+        :setForeground(colors.red)
+
+    local input_current_coords_button = add_waystone_frame:addButton()
+        :setPosition(add_waystone_frame:getWidth() - 2, 1)
+        :setSize(1, 1)
+        :setText("*")
+        :setBackground("{self.clicked and colors.lightGray or colors.black}")
+        :setForeground(colors.cyan)
 
     return app
 end

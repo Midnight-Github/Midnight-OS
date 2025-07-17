@@ -22,7 +22,7 @@ local function infoApp(parent)
     }
 
     -- all tables below must have same number of values
-    local section_title = {"- Compass -", "- GPS -", " - Game -", "", "- IRL -"}
+    local section_title = {"- Compass -", "- GPS -", "- Game -", "", "- IRL -"}
 
     local left_data_key = {"player_speed", "", "game_day", "game_date", "irl_date"}
     local mid_data_key = {"", "coords", "game_time", "", "irl_time"}
@@ -33,6 +33,10 @@ local function infoApp(parent)
     local data_label = {}
 
     -- Functions
+    local function get()
+
+    end
+
     local function addOptions(drop_down, list)
         for _, item in ipairs(list) do
             if item ~= "" then
@@ -41,8 +45,8 @@ local function infoApp(parent)
         end
     end
 
-    local function addTitleBar(patent, y, width, title)
-        patent:addLabel()
+    local function addTitleBar(parent, y, width, title)
+        parent:addLabel()
             :setPosition(ext.getCenterPos(width, #title), y)
             :setText(title)
             :setBackground(colors.black)
@@ -179,6 +183,7 @@ local function infoApp(parent)
     bext.addVarticalScrolling(main_frame)
 
     local width = main_frame:getWidth() - 2
+    width = 24
     local zipped = ext.zip(section_title, left_data_key, mid_data_key, right_data_key)
     local y = 1
     for i = 1, #zipped do
@@ -203,7 +208,7 @@ local function infoApp(parent)
         addDataBar(data_frame, 1, 3, width, left_key, mid_key, right_key)
         y = y + 4
     end
-    addTitleBar(main_frame, y + 1, width, "  - Status Display -")
+    addTitleBar(main_frame, y + 1, width, "- Status Display -")
     addHeadingBar(main_frame, 2, y + 3, width, "Left", "Mid", "Right", 3, 3)
     addOptionBar(main_frame, 2, y + 5, width)
 

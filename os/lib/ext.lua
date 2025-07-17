@@ -245,6 +245,17 @@ local function trim(string)
     return (string:gsub("^%s*(.-)%s*$", "%1"))
 end
 
+-- Python like string multiplication
+local function repeatString(str, count)
+    if count <= 0 then return "" end
+
+    local result = ""
+    for i = 1, count do
+        result = result..str
+    end
+    return result
+end
+
 
 -- Redstone functions
 
@@ -260,7 +271,7 @@ end
 -- UI functions
 -- Returns the center position of text
 local function getCenterPos(screen_length, text_length)
-    return math.max(1, math.ceil((screen_length - text_length) / 2) + 1)
+    return math.max(1, math.floor((screen_length - text_length) / 2) + 1)
 end
 
 
@@ -416,6 +427,7 @@ return {
     getKeys = getKeys,
     eval = eval,
     trim = trim,
+    repeatString = repeatString,
     redstonePulse = redstonePulse,
     getCenterPos = getCenterPos,
     splitPathExtension = splitPathExtension,

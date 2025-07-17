@@ -11,8 +11,7 @@ local blacklist = {
     "LICENSE",
     "dev",
     "about.txt",
-    "midnightos_installer.lua",
-    "midnightos_uninstaller.lua",
+    "installer.lua",
     "rom",
     "appdata"
 }

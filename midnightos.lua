@@ -6,7 +6,6 @@ local config = require("os/config")
 local const = require("os/const")
 local metrics = require("os/lib/metrics")
 local api = require("os/lib/api")
--- local gps = require("os/lib/gps")
 
 -- variables
 local main
