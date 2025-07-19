@@ -50,7 +50,7 @@ end
 
 local function getFormattedDynamicData(key)
     if not key then return "" end
-    
+
     if key == "coords" then
         local x = api.getDynamicData("x_coord")
         local y = api.getDynamicData("y_coord")
@@ -247,19 +247,14 @@ app_container_frame = slide_frame:addFrame()
 
 -- app loader
 local apps = {}
-local app_files = fs.list("os/app")
-
-for _, file in ipairs(app_files) do
-    if file:sub(-4) == ".lua" then
-        local app = require("os/app/" .. file:sub(1, -5))
-        table.insert(apps, app)
-    end
+for _, app_dir_name in ipairs(fs.list("os/app")) do
+    local app = require("os/app/" .. app_dir_name .. "/main")
+    apps[app_dir_name] = app
 end
 
-for _, app in ipairs(apps) do
+for app_name, app in pairs(apps) do
     local is_valid_app = ext.iany({
         type(app) == "table",
-        app.name and type(app.name) == "string",
         app.display_text and type(app.display_text) == "string",
         app.icon and type(app.icon) == "function",
         app.app and type(app.app) == "function"
@@ -268,12 +263,12 @@ for _, app in ipairs(apps) do
     if not is_valid_app then -- invalid app
         goto skip_app_from_list
     end
-    if not ext.indexOf(config.app_display_order, app.name) then -- disabled app
+    if not ext.indexOf(config.app_display_order, app_name) then -- disabled app
         goto skip_app_from_list
     end
 
     local frame = app_list_frame:addFrame()
-        :setPosition(2, 1 + 4*(ext.indexOf(config.app_display_order, app.name) - 1))
+        :setPosition(2, 1 + 4*(ext.indexOf(config.app_display_order, app_name) - 1))
         :setSize(app_list_frame:getWidth() - 2, 3)
 
     local icon_canvas_frame = frame:addFrame()
@@ -290,7 +285,7 @@ for _, app in ipairs(apps) do
         :setSize(frame:getWidth() - 6, 3)
         :setForeground(colors.white)
         :setBackground("{self.clicked and colors.lightGray or colors.gray}")
-        :onClickUp(function() showApp(app.name) end)
+        :onClickUp(function() showApp(app_name) end)
 
     local app_interface_frame = app_container_frame:addFrame()
         :setPosition(1, 1)
@@ -327,12 +322,12 @@ for _, app in ipairs(apps) do
 
     local app_package = app.app(
         parent,
-        appdata_path.."/"..app.name,
+        appdata_path.."/"..app_name,
         callback
     )
 
-    app_data[app.name] = {
-        launcherFrame = frame,
+    app_data[app_name] = {
+        launcher_frame = frame,
         icon_canvas = icon_canvas,
 
         display_text = app.display_text,

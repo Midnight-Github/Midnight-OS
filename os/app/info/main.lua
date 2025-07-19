@@ -5,7 +5,7 @@ local config = require("os/config")
 local metrics = require("os/lib/metrics")
 
 
-local function infoApp(parent)
+local function infoApp(parent, appdata_path, callback)
     -- Config
     local data_info = {
         game_day = {heading = "Day", squeeze_ratio = 3, status_option_text = "day"},
@@ -238,6 +238,7 @@ local function infoApp(parent)
     addOptionBar(main_frame, 1, y + 5)
 
     app.update = updateData
+    app.onBack = callback.hide_app
 
     return app
 end
@@ -253,7 +254,6 @@ local function drawIcon(canvas)
 end
 
 return {
-    name = "info",
     display_text = "Info",
     icon = drawIcon,
     app = infoApp

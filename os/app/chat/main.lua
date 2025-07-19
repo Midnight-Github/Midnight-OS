@@ -257,7 +257,6 @@ local function drawIcon(canvas)
 end
 
 return {
-    name = "chat",
     display_text = "Chat",
     icon = drawIcon,
     app = chatApp

@@ -1,4 +1,4 @@
-local function terminalApp(parent)
+local function terminalApp(parent, appdata_path, callback)
     local app = {}
     local main_frame = parent:addFrame()
         :setPosition(1, 2)
@@ -11,6 +11,8 @@ local function terminalApp(parent)
 
     prog:execute("shell")
 
+    app.onBack = callback.hide_app
+
     return app
 end
 
@@ -21,7 +23,6 @@ local function drawIcon(canvas)
 end
 
 return {
-    name = "terminal",
     display_text = "Terminal",
     icon = drawIcon,
     app = terminalApp,

@@ -2,7 +2,7 @@ local ext = require("os/lib/ext")
 local bext = require("os/lib/basalt/bext")
 local api = require("os/lib/api")
 
-local function waystoneApp(parent)
+local function waystoneApp(parent, appdata_path, callback)
     -- Variables
     local app = {}
 
@@ -94,6 +94,8 @@ local function waystoneApp(parent)
             input_z:setText(api.getDynamicData("z_coord"))
         end)
 
+    app.onBack = callback.hide_app
+
     return app
 end
 
@@ -106,7 +108,6 @@ local function drawIcon(canvas)
 end
 
 return {
-    name = "waystone",
     display_text = "Waystone",
     icon = drawIcon,
     app = waystoneApp

@@ -1,6 +1,6 @@
 local ext = require("os/lib/ext")
 
-local function calculatorApp(parent)
+local function calculatorApp(parent, appdata_path, callback)
     -- Variables
     local app = {}
     local input_label, input_wrap_label, result_label
@@ -217,6 +217,8 @@ local function calculatorApp(parent)
     end
     button_preset_frames[selected_preset]:setVisible(true)
 
+    app.onBack = callback.hide_app
+
     return app
 end
 
@@ -228,7 +230,6 @@ local function drawIcon(canvas)
 end
 
 return {
-    name = "calculator",
     display_text = "Calculator",
     icon = drawIcon,
     app = calculatorApp,
