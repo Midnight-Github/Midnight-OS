@@ -25,9 +25,9 @@ local function setDynamicData(key, value)
 end
 
 -- config
-local function updateConfig(config)
+local function updateConfig(config_data)
     ext.withSafeFile("os/config.lua", "w", function(file)
-        file.write("return " .. textutils.serialize(config))
+        file.write("return " .. textutils.serialize(config_data))
     end)
 end
 

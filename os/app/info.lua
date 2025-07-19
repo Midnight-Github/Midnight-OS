@@ -8,16 +8,16 @@ local function infoApp(parent)
     -- Config
     local data_info = {
         game_day = {heading = "Day", squeeze_ratio = 3, status_option_text = "day"},
-        game_date = {heading = "Date", squeeze_ratio  = 2.3, status_option_text = "date"},
-        game_season = {heading = "Season", squeeze_ratio  = 2.3, status_option_text = "season"},
+        game_date = {heading = "Date", squeeze_ratio  = 2, status_option_text = "date"},
+        game_season = {heading = "Season", squeeze_ratio  = 2, status_option_text = "season"},
         game_time = {heading = "Time", squeeze_ratio = 3, status_option_text = "time"},
         game_day_or_night = {heading = "D/N", squeeze_ratio = 3, status_option_text = "d/n"},
         irl_day = {heading = "Day", squeeze_ratio = 3, status_option_text = "irl-day"},
         irl_time = {heading = "Time", squeeze_ratio = 3, status_option_text = "irl-time"},
         irl_date = {heading = "Date", squeeze_ratio = 3, status_option_text = "irl-date"},
         coords = {heading = "Coords", squeeze_ratio = 3, status_option_text = "coords"},
-        player_speed = {heading = "Speed", squeeze_ratio  = 2.3, status_option_text = "speed"},
-        player_direction = {heading = "Dir", squeeze_ratio  = 2.3, status_option_text = "direction"},
+        player_speed = {heading = "Speed", squeeze_ratio  = 2, status_option_text = "speed"},
+        player_direction = {heading = "Dir", squeeze_ratio  = 2, status_option_text = "direction"},
         [""] = {heading = "", squeeze_ratio = 3, status_option_text = ""},
     }
 
@@ -33,8 +33,24 @@ local function infoApp(parent)
     local data_label = {}
 
     -- Functions
-    local function get()
+    local function getAlignmentPos(total_width, text_width, side, squeeze_ratio) -- default side: mid
+        if side == nil then side = "mid" end
+        if side == "mid" or side == "middle" then squeeze_ratio = 1 end
 
+        local section_width = math.floor(total_width/squeeze_ratio)
+        if side == "left" then
+            return ext.getCenterPos(section_width, text_width)
+
+        elseif side == "mid" or side == "middle" then
+            return ext.getCenterPos(total_width, text_width)
+
+        elseif side == "right" then
+            local section_start = total_width - section_width + 1
+            return section_start + ext.getCenterPos(section_width, text_width)
+
+        else
+            error("Invalid alignment side: " .. tostring(side))
+        end
     end
 
     local function addOptions(drop_down, list)
@@ -45,47 +61,43 @@ local function infoApp(parent)
         end
     end
 
-    local function addTitleBar(parent, y, title)
-        parent:addLabel()
-            :setPosition(ext.getCenterPos(parent:getWidth(), #title), y)
+    local function addTitleBar(master, y, title)
+        master:addLabel()
+            :setPosition(ext.getCenterPos(master:getWidth(), #title), y)
             :setText(title)
             :setBackground(colors.black)
             :setForeground(colors.white)
     end
 
-    local function addHeadingBar(parent, x, y, left_heading, mid_heading, right_heading, left_squeeze_ratio, right_squeeze_ratio)
-        local heading_frame = parent:addFrame()
+    local function addHeadingBar(master, x, y, left_heading, mid_heading, right_heading, left_squeeze_ratio, right_squeeze_ratio)
+        local heading_frame = master:addFrame()
             :setPosition(x, y)
-            :setSize(parent:getWidth(), 1)
+            :setSize(master:getWidth(), 1)
             :setBackground(colors.black)
 
         local left_label = heading_frame:addLabel()
-            :setPosition(ext.getCenterPos(parent:getWidth()/left_squeeze_ratio, #left_heading), 1)
+            :setPosition(getAlignmentPos(master:getWidth(), #left_heading, "left", left_squeeze_ratio), 1)
             :setText(left_heading)
             :setForeground(colors.lightGray)
             :setSize(#left_heading, 1)
 
         local mid_label = heading_frame:addLabel()
-            :setPosition(ext.getCenterPos(parent:getWidth(), #mid_heading), 1)
+            :setPosition(getAlignmentPos(master:getWidth(), #mid_heading), 1)
             :setText(mid_heading)
             :setForeground(colors.lightGray)
             :setSize(#mid_heading, 1)
 
-        -- Dynamically center right heading within right section
-        local section_width = parent:getWidth() / right_squeeze_ratio
-        local section_start = parent:getWidth() - section_width + 1
-        local right_label_pos = section_start + ext.getCenterPos(section_width, #right_heading)
         local right_label = heading_frame:addLabel()
-            :setPosition(right_label_pos, 1)
+            :setPosition(getAlignmentPos(master:getWidth(), #right_heading, "right", right_squeeze_ratio), 1)
             :setText(right_heading)
             :setForeground(colors.lightGray)
             :setSize(#right_heading, 1)
     end
 
-    local function addDataBar(parent, x, y, left_key, mid_key, right_key)
-        local data_frame = parent:addFrame()
-            :setPosition(1, 3)
-            :setSize(parent:getWidth(), 1)
+    local function addDataBar(master, x, y, left_key, mid_key, right_key)
+        local data_frame = master:addFrame()
+            :setPosition(x, y)
+            :setSize(master:getWidth(), 1)
             :setBackground(colors.gray)
 
         data_label[left_key] = data_frame:addLabel()
@@ -101,15 +113,15 @@ local function infoApp(parent)
             :setForeground(colors.white)
     end
 
-    local function addOptionBar(parent, x, y)
-        local data_frame = parent:addFrame()
+    local function addOptionBar(master, x, y)
+        local data_frame = master:addFrame()
             :setPosition(x, y)
-            :setSize(parent:getWidth(), 6)
+            :setSize(master:getWidth(), 6)
             :setBackground(colors.black)
 
         local data_keys = ext.getKeys(data_info)
 
-        local section_width = parent:getWidth() / 3
+        local section_width = math.floor(master:getWidth() / 3)
         local left_option = data_frame:addDropdown()
             :setPosition(1, 1)
             :setBackground(colors.gray)
@@ -124,7 +136,7 @@ local function infoApp(parent)
         end)
 
         local mid_option = data_frame:addDropdown()
-            :setPosition(ext.getCenterPos(parent:getWidth(), section_width), 1)
+            :setPosition(ext.getCenterPos(master:getWidth(), section_width - 1), 1)
             :setBackground(colors.gray)
             :setForeground(colors.white)
             :setSize(section_width - 1, 1)
@@ -136,10 +148,8 @@ local function infoApp(parent)
             api.updateConfig(config)
         end)
 
-        -- Dynamically center right dropdown within right section
-        local right_section_start = parent:getWidth() - section_width
         local right_option = data_frame:addDropdown()
-            :setPosition(right_section_start + ext.getCenterPos(section_width, section_width), 1)
+            :setPosition(master:getWidth() - (section_width - 1) + 1, 1)
             :setBackground(colors.gray)
             :setForeground(colors.white)
             :setSize(section_width - 1, 1)
@@ -161,17 +171,18 @@ local function infoApp(parent)
                 local squeeze_ratio = val.squeeze_ratio
 
                 if #new_data ~= #old_data then
-                    if ext.contains(left_data_key, key) then
-                        data_label[key]:setPosition(ext.getCenterPos(frame_width/squeeze_ratio, #new_data), 1)
-                    elseif ext.contains(mid_data_key, key) then
-                        data_label[key]:setPosition(ext.getCenterPos(frame_width, #new_data), 1)
-                    elseif ext.contains(right_data_key, key) then
-                        -- Dynamically center within right section
-                        local section_width = frame_width / squeeze_ratio
-                        local section_start = frame_width - section_width + 1
-                        data_label[key]:setPosition(section_start + ext.getCenterPos(section_width, #new_data), 1)
+                    if ext.contains(left_data_key, key) then -- left section
+                        data_label[key]:setPosition(getAlignmentPos(frame_width, #new_data, "left", squeeze_ratio), 1)
+
+                    elseif ext.contains(mid_data_key, key) then -- mid section
+                        data_label[key]:setPosition(getAlignmentPos(frame_width, #new_data), 1)
+
+                    elseif ext.contains(right_data_key, key) then -- right section
+                        data_label[key]:setPosition(getAlignmentPos(frame_width, #new_data, "right", squeeze_ratio), 1)
                     end
+
                     data_label[key]:setText(new_data)
+
                 elseif new_data ~= old_data then
                     data_label[key]:setText(new_data)
                 end
@@ -181,8 +192,8 @@ local function infoApp(parent)
 
     -- Main
     local main_frame = parent:addFrame()
-        :setPosition(1, 2)
-        :setSize(parent:getWidth(), parent:getHeight() - 2)
+        :setPosition(2, 2)
+        :setSize(parent:getWidth() - 2, parent:getHeight() - 2)
         :setBackground(colors.black)
     bext.addVarticalScrolling(main_frame)
 
@@ -197,8 +208,8 @@ local function infoApp(parent)
         end
 
         local data_frame = main_frame:addFrame()
-            :setPosition(2, y)
-            :setSize(main_frame:getWidth() - 2, 3)
+            :setPosition(1, y)
+            :setSize(main_frame:getWidth(), 3)
             :setBackground(colors.black)
 
         local left_heading = data_info[left_key].heading
@@ -210,9 +221,10 @@ local function infoApp(parent)
         addDataBar(data_frame, 1, 3, left_key, mid_key, right_key)
         y = y + 4
     end
+
     addTitleBar(main_frame, y + 1, "- Status Display -")
-    addHeadingBar(main_frame, 2, y + 3, "Left", "Mid", "Right", 3, 3)
-    addOptionBar(main_frame, 2, y + 5)
+    addHeadingBar(main_frame, 1, y + 3, "Left", "Mid", "Right", 3, 3)
+    addOptionBar(main_frame, 1, y + 5)
 
     app.update = updateData
 
