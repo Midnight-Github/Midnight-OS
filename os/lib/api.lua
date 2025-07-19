@@ -33,6 +33,7 @@ end
 
 -- utils
 local function getIRLLocalTimestamp()
+---@diagnostic disable-next-line: undefined-field
     return os.epoch("utc")/1000 + config.settings.hours_off_set_from_utc * 3600
 end
 

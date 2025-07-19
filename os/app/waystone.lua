@@ -26,7 +26,7 @@ local function waystoneApp(parent)
 
     local name_box_size = math.floor(add_waystone_frame:getWidth() * 2 / 5 - 3)
     local coord_box_size = math.min(math.floor((add_waystone_frame:getWidth() * 2 / 5) / 3), 7)
-    local coord_input_indent = ext.repeatString(" ", ext.getCenterPos(coord_box_size, 1))
+    local coord_input_indent = ext.repeatString(" ", ext.getCenterPos(coord_box_size, 1) - 1)
 
     local input_name = add_waystone_frame:addInput()
         :setPosition(1, 1)
@@ -34,7 +34,7 @@ local function waystoneApp(parent)
         :setBackground(colors.gray)
         :setFocusedBackground(colors.gray)
         :setForeground(colors.white)
-        :setPlaceholder(ext.repeatString(" ", ext.getCenterPos(name_box_size, 4)).."Name")
+        :setPlaceholder(ext.repeatString(" ", ext.getCenterPos(name_box_size, 4) - 1).."Name")
         :setPlaceholderColor(colors.lightGray)
 
     local input_x = add_waystone_frame:addInput()
