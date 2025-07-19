@@ -2,6 +2,7 @@ local bext = require("os/lib/basalt/bext")
 local api = require("os/lib/api")
 local ext = require("os/lib/ext")
 local config = require("os/config")
+local metrics = require("os/lib/metrics")
 
 
 local function infoApp(parent)
@@ -127,7 +128,7 @@ local function infoApp(parent)
             :setBackground(colors.gray)
             :setForeground(colors.white)
             :setSize(section_width - 1, 1)
-            :addItem({text = "None", args = {data_key = ""}})
+            :addItem({text = "None", args = {data_key = nil}})
         addOptions(left_option, data_keys)
         left_option:selectItem(ext.indexOf(data_keys, config.status_bar_info.left))
         left_option:onSelect(function(self, event, item)
@@ -140,7 +141,7 @@ local function infoApp(parent)
             :setBackground(colors.gray)
             :setForeground(colors.white)
             :setSize(section_width - 1, 1)
-            :addItem({text = "None", args = {data_key = ""}})
+            :addItem({text = "None", args = {data_key = nil}})
         addOptions(mid_option, data_keys)
         mid_option:selectItem(ext.indexOf(data_keys, config.status_bar_info.mid))
         mid_option:onSelect(function(self, event, item)
@@ -153,7 +154,7 @@ local function infoApp(parent)
             :setBackground(colors.gray)
             :setForeground(colors.white)
             :setSize(section_width - 1, 1)
-            :addItem({text = "None", args = {data_key = ""}})
+            :addItem({text = "None", args = {data_key = nil}})
         addOptions(right_option, data_keys)
         right_option:selectItem(ext.indexOf(data_keys, config.status_bar_info.right))
         right_option:onSelect(function(self, event, item)
@@ -167,8 +168,18 @@ local function infoApp(parent)
         for key, val in pairs(data_info) do
             if key ~= "" then
                 local old_data = data_label[key]:getText()
-                local new_data = api.getDynamicData(key)
                 local squeeze_ratio = val.squeeze_ratio
+                local new_data = ""
+
+                if key == "coords" then
+                    local x = api.getDynamicData("x_coord")
+                    local y = api.getDynamicData("y_coord")
+                    local z = api.getDynamicData("z_coord")
+                    new_data = metrics.formatCoords(x, y, z) or "-"
+                else
+                    new_data = api.getDynamicData(key) or "-"
+                    new_data = tostring(new_data)
+                end
 
                 if #new_data ~= #old_data then
                     if ext.contains(left_data_key, key) then -- left section

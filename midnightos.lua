@@ -48,14 +48,24 @@ local function hideApp()
         :start()
 end
 
-local function updateStatusBar()
-    local left_status_text = api.getDynamicData(config.status_bar_info.left)
-    local mid_status_text = api.getDynamicData(config.status_bar_info.mid)
-    local right_status_text = api.getDynamicData(config.status_bar_info.right)
+local function getFormattedDynamicData(key)
+    if not key then return "" end
+    
+    if key == "coords" then
+        local x = api.getDynamicData("x_coord")
+        local y = api.getDynamicData("y_coord")
+        local z = api.getDynamicData("z_coord")
+        return metrics.formatCoords(x, y, z) or "-"
 
-    if not left_status_text then left_status_text = "" end
-    if not mid_status_text then mid_status_text = "" end
-    if not right_status_text then right_status_text = "" end
+    else
+        return tostring(api.getDynamicData(key) or "-")
+    end
+end
+
+local function updateStatusBar()
+    local left_status_text = getFormattedDynamicData(config.status_bar_info.left) or ""
+    local mid_status_text = getFormattedDynamicData(config.status_bar_info.mid) or ""
+    local right_status_text = getFormattedDynamicData(config.status_bar_info.right) or ""
 
     if #left_status_text ~= #status_left_label:getText() then
         status_mid_label:setPosition(#left_status_text + 2, 1)
@@ -76,11 +86,20 @@ end
 
 local function updateDynamicData()
     local x, y, z = gps.locate()
-    api.setDynamicData("coords", metrics.formatCoords(x, y, z))
+    if x and y and z then
+        api.setDynamicData("x_coord", ext.round(x))
+        api.setDynamicData("y_coord", ext.round(y))
+        api.setDynamicData("z_coord", ext.round(z))
+    else
+        api.setDynamicData("x_coord", nil)
+        api.setDynamicData("y_coord", nil)
+        api.setDynamicData("z_coord", nil)
+    end
+    
     api.setDynamicData("player_speed", metrics.getMovementSpeed(x, y, z))
     api.setDynamicData("player_direction", metrics.getMovementDirection(x, z))
 
----@diagnostic disable-next-line: undefined-field
+    ---@diagnostic disable-next-line: undefined-field
     local game_day = os.day()
     local game_hour = os.time()
     local irl_timestamp = math.floor(api.getIRLLocalTimestamp())

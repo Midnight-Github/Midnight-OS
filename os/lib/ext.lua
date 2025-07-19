@@ -40,8 +40,9 @@ end
 
 -- Math functions
 
-local function round(num)
-    return num >= 0 and math.floor(num + 0.5) or math.ceil(num - 0.5)
+local function round(num, precision)
+    precision = precision or 1
+    return math.floor(num / precision + 0.5) * precision
 end
 
 local function signum(num)

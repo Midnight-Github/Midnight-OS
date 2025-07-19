@@ -1,8 +1,15 @@
 local ext = require("os/lib/ext")
+local bext = require("os/lib/basalt/bext")
+local api = require("os/lib/api")
 
 local function waystoneApp(parent)
     -- Variables
     local app = {}
+
+    -- Functions
+    local function addWaystone(name, x, y, z)
+
+    end
 
     -- Main
     local main_frame = parent:addFrame()
@@ -18,6 +25,7 @@ local function waystoneApp(parent)
         :setPosition(1, 4)
         :setSize(main_frame:getWidth(), main_frame:getHeight() - 5)
         :setBackground(colors.blue)
+    bext.addHorizontalScrolling(waystone_selection_frame)
 
     local add_waystone_frame = main_frame:addFrame()
         :setPosition(1, main_frame:getHeight())
@@ -77,6 +85,14 @@ local function waystoneApp(parent)
         :setText("*")
         :setBackground("{self.clicked and colors.lightGray or colors.black}")
         :setForeground(colors.cyan)
+        :onClickUp(function()
+            if ext.iall({api.getDynamicData("x_coord"), api.getDynamicData("y_coord"), api.getDynamicData("z_coord")}) then
+                return
+            end
+            input_x:setText(api.getDynamicData("x_coord"))
+            input_y:setText(api.getDynamicData("y_coord"))
+            input_z:setText(api.getDynamicData("z_coord"))
+        end)
 
     return app
 end

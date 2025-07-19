@@ -3,17 +3,19 @@ local ext = require("os/lib/ext")
 local config = require("os/config")
 
 local dynamic_data = {
-    game_day = "-",
-    game_date = "-",
-    game_season = "-",
-    game_time = "-",
-    game_day_or_night = "-",
-    irl_day = "-",
-    irl_time = "-",
-    irl_date = "-",
-    coords = "-",
-    player_speed = "-",
-    player_direction = "-",
+    game_day = nil,
+    game_date = nil,
+    game_season = nil,
+    game_time = nil,
+    game_day_or_night = nil,
+    irl_day = nil,
+    irl_time = nil,
+    irl_date = nil,
+    x_coord = nil,
+    y_coord = nil,
+    z_coord = nil,
+    player_speed = nil,
+    player_direction = nil,
 }
 
 local function getDynamicData(key)
