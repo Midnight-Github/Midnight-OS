@@ -279,13 +279,12 @@ for app_name, app in pairs(apps) do
     local icon_canvas = icon_canvas_frame:getCanvas()
     app.icon(icon_canvas)
 
-    frame:addButton()
+    local launch_button = frame:addButton()
         :setText(app.display_text)
         :setPosition(7, 1)
         :setSize(frame:getWidth() - 6, 3)
         :setForeground(colors.white)
         :setBackground("{self.clicked and colors.lightGray or colors.gray}")
-        :onClickUp(function() showApp(app_name) end)
 
     local app_interface_frame = app_container_frame:addFrame()
         :setPosition(1, 1)
@@ -327,7 +326,8 @@ for app_name, app in pairs(apps) do
     )
 
     app_data[app_name] = {
-        launcher_frame = frame,
+        launch_frame = frame,
+        launch_button = launch_button,
         icon_canvas = icon_canvas,
 
         display_text = app.display_text,
@@ -336,9 +336,16 @@ for app_name, app in pairs(apps) do
         update = app_package.update,
         backgroundUpdate = app_package.backgroundUpdate,
 
+        onAppFocus = app_package.onAppFocus,
         onTraffic = app_package.onTraffic,
+        onMeny = app_package.onMenu,
         onBack = app_package.onBack
     }
+
+    launch_button:onClickUp(function()
+        app_data[app_name].onAppFocus()
+        showApp(app_name)
+    end)
 
     ::skip_app_from_list::
 end
@@ -366,7 +373,12 @@ home_button = tray_bar:addButton()
     :setPosition(ext.getCenterPos(tray_bar:getWidth(), 3), 1)
     :setBackground("{self.clicked and colors.lightGray or colors.gray}")
     :setForeground(colors.white)
-    :onClickUp(hideApp)
+    :onClickUp(function()
+        if not current_app then return end
+        if not app_data[current_app].frame.visible then return end
+        triggerAppFunction("onMenu")
+        hideApp()
+    end)
 
 settings_button = tray_bar:addButton()
     :setText("[*]")

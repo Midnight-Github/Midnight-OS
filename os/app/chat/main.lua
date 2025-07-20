@@ -248,7 +248,9 @@ local function chatApp(parent, appdata_path, callback)
     app.update = update
     app.onTraffic = onTraffic
     app.onBack = callback.hide_app
-    return app
+    app.onAppFocus = function()
+        callback.notification(false)
+    end
 end
 
 local function drawIcon(canvas)
