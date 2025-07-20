@@ -14,12 +14,17 @@ Midnight-OS is a modular, extensible operating system for [CC: Tweaked](https://
 
 ## Directory Structure
 
+## Directory Structure
+
 ```
 midnightos.lua                # Main OS launcher
 startup.lua                   # Startup script
 installer.lua                 # Installer script
 uninstaller.lua               # Uninstaller script
 about.txt                     # About info
+dev/
+  upload/
+    main.lua                  # Upload utility
 os/
   config.lua                  # User and system config
   const.lua                   # Constants
@@ -31,39 +36,40 @@ os/
       bext.lua                # Basalt UI extensions
       main.lua                # Basalt UI library
   app/
-    calculator.lua            # Calculator app
-    chat.lua                  # Chat app (with user/message storage)
-    info.lua                  # Info dashboard app
-    terminal.lua              # Terminal emulator app
-    waystone.lua              # Waystone navigation app (WIP)
-  appdata/                    # App data storage (chat users/messages, etc.)
+    calculator/
+      main.lua                # Calculator app
+    chat/
+      main.lua                # Chat app (with user/message storage)
+    info/
+      main.lua                # Info dashboard app
+    terminal/
+      main.lua                # Terminal emulator app
+    waystone/
+      main.lua                # Waystone navigation app (WIP)
 ```
 
 ## Installation
 
 1. **Enable HTTP API** in your CC: Tweaked config (`http.enabled=true`).
-2. Download and run the installer:
+2. Type lua in your terminal and run the following code:
    ```
-   pastebin get Rrv6fxDg installer
+   file = fs.open("installer.lua", "w") file.write(http.get("https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/installer.lua").readAll()) file.close() shell.run("installer.lua")
    ```
-   Or copy `midnightos_installer.lua` to your computer and run:
-   ```
-   installer.lua
-   ```
+   Or download and run `installer.lua` in your computer:
 3. Follow the prompts to set up your display name and time zone.
 
 ## Usage
 
 - The OS will launch automatically on startup.
 - Use the app list to open Calculator, Chat, Info, Terminal, and other apps.
-- Settings are accessible from the terminal app.
-- Chat and other apps store data in `os/appdata/`.
+- Settings are accessible from the terminal app at `os/config.lua` for now.
+- Apps usually store data in `os/appdata/`.
 
 ## Development
 
 - Apps are located in `os/app/`.
 - Utilities and libraries are in `os/lib/`.
-- The Basalt UI library is minified in `os/lib/basalt/main.lua`.
+- The Basalt UI library is located at `os/lib/basalt/main.lua`.
 
 ## Uninstallation
 
@@ -74,7 +80,7 @@ To completely remove Midnight-OS from your computer:
    uninstaller.lua
    ```
 2. Confirm the prompt to proceed.
-3. The script will delete all Midnight-OS files and folders, including `os/`, `startup.lua`, and `midnightos.lua`.
+3. The script will delete all Midnight-OS files and folders except the installer.
 
 **Warning:** This action is irreversible and will remove all OS files, including any data stored in `os/appdata/`.
 
