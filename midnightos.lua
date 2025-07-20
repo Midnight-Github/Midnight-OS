@@ -343,7 +343,7 @@ for app_name, app in pairs(apps) do
     }
 
     launch_button:onClickUp(function()
-        app_data[app_name].onAppFocus()
+        app_package.onAppFocus()
         showApp(app_name)
     end)
 

@@ -251,6 +251,8 @@ local function chatApp(parent, appdata_path, callback)
     app.onAppFocus = function()
         callback.notification(false)
     end
+
+    return app
 end
 
 local function drawIcon(canvas)

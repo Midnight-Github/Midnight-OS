@@ -4,19 +4,19 @@
 local failed_files = {}
 local git_path = {
     [ "os/lib/api.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/lib/api.lua",
-    [ "os/app/chat.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/app/chat.lua",
-    [ "os/lib/metrics.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/lib/metrics.lua",
-    [ "os/lib/basalt/bext.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/lib/basalt/bext.lua",
     [ "uninstaller.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/uninstaller.lua",
-    [ "os/lib/ext.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/lib/ext.lua",
-    [ "os/app/waystone.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/app/waystone.lua",
-    [ "midnightos.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/midnightos.lua",
-    [ "os/app/info.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/app/info.lua",
+    [ "os/app/info/main.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/app/info/main.lua",
     [ "startup.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/startup.lua",
+    [ "os/app/waystone/main.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/app/waystone/main.lua",
+    [ "os/lib/metrics.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/lib/metrics.lua",
+    [ "os/app/terminal/main.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/app/terminal/main.lua",
+    [ "midnightos.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/midnightos.lua",
+    [ "os/app/calculator/main.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/app/calculator/main.lua",
+    [ "os/app/chat/main.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/app/chat/main.lua",
     [ "os/config.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/config.lua",
-    [ "os/app/calculator.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/app/calculator.lua",
-    [ "os/app/terminal.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/app/terminal.lua",
     [ "os/const.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/const.lua",
+    [ "os/lib/ext.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/lib/ext.lua",
+    [ "os/lib/basalt/bext.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/lib/basalt/bext.lua",
     [ "os/lib/basalt/main.lua" ] = "https://raw.githubusercontent.com/Midnight-Github/Midnight-OS/refs/heads/main/os/lib/basalt/main.lua",
 }
 
