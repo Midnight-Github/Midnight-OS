@@ -248,9 +248,8 @@ local function chatApp(parent, appdata_path, callback)
     app.update = update
     app.onTraffic = onTraffic
     app.onBack = callback.hide_app
-    app.onAppFocus = function()
-        callback.notification(false)
-    end
+    app.onHome = function() callback.notification(false) end
+    app.onAppFocus = function() callback.notification(false) end
 
     return app
 end

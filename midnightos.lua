@@ -130,10 +130,16 @@ local function updateApp()
     app_data[current_app].update()
 end
 
-local function triggerAppFunction(func_name, ...)
-    for _, app in pairs(app_data) do
-        if app[func_name] then
-            app[func_name](...)
+local function triggerAppFunction(app_name, func_name, ...)
+    if app_name == "all" then
+        for _, app in pairs(app_data) do
+            if app[func_name] then
+                app[func_name](...)
+            end
+        end
+    else
+        if app_data[app_name] and app_data[app_name][func_name] then
+            app_data[app_name][func_name](...)
         end
     end
 end
@@ -142,7 +148,7 @@ local function handleTraffic()
     local sender_id, data, protocol = rednet.receive(const.protocol)
     if not sender_id then return end
 
-    triggerAppFunction("onTraffic", sender_id, data, api.getIRLLocalTimestamp())
+    triggerAppFunction("all", "onTraffic", sender_id, data, api.getIRLLocalTimestamp())
 end
 
 local function grabTraffic()
@@ -158,7 +164,7 @@ local function processTraffic()
     while true do
         if #traffic_queue > 0 then
             local msg = table.remove(traffic_queue, 1)
-            triggerAppFunction("onTraffic", table.unpack(msg))
+            triggerAppFunction("all", "onTraffic", table.unpack(msg))
         else
             sleep(0.2)
         end
@@ -197,7 +203,7 @@ local function mainLoop()
     while true do
         update()
         updateApp()
-        triggerAppFunction("backgroundUpdate")
+        triggerAppFunction("all", "backgroundUpdate")
         sleep(config.settings.refresh_delay)
     end
 end
@@ -338,7 +344,7 @@ for app_name, app in pairs(apps) do
 
         onAppFocus = app_package.onAppFocus,
         onTraffic = app_package.onTraffic,
-        onMeny = app_package.onMenu,
+        onHome = app_package.onHome,
         onBack = app_package.onBack
     }
 
@@ -364,7 +370,7 @@ back_button = tray_bar:addButton()
     :onClickUp(function()
         if not current_app then return end
         if not app_data[current_app].frame.visible then return end
-        triggerAppFunction("onBack")
+        triggerAppFunction(current_app, "onBack")
     end)
 
 home_button = tray_bar:addButton()
@@ -376,7 +382,7 @@ home_button = tray_bar:addButton()
     :onClickUp(function()
         if not current_app then return end
         if not app_data[current_app].frame.visible then return end
-        triggerAppFunction("onMenu")
+        triggerAppFunction(current_app, "onHome")
         hideApp()
     end)
 
