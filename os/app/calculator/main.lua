@@ -1,93 +1,32 @@
 local ext = require("os/lib/ext")
+local config = require("os/app/calculator/config")
 
 local function calculatorApp(parent, appdata_path, callback)
     -- Variables
     local app = {}
     local input_label, input_wrap_label, result_label
     local button_preset_frames = {}
-
-    -- Config
-    local safe_env = {
-        abs = math.abs, fractional = ext.fractionalPart, factorial = ext.factorial, log = math.log,
-        round = ext.round, ceil = math.ceil, floor = math.floor,
-        pi = math.pi, e = math.exp(1),
-        rad = math.rad, deg = math.deg,
-        sin = math.sin, csc = ext.cosec, cos = math.cos, sec = ext.sec, tan = math.tan, cot = ext.cot,
-        asin = math.asin, acos = math.acos, atan = math.atan, asec = ext.asec, acot = ext.acot, acosec = ext.acosec,
-        sinh = ext.sinh, cosh = ext.cosh, tanh = ext.tanh, sech = ext.sech, coth = ext.coth, cosech = ext.cosech
-    }
-
-    local button_display_text_presets = {
-        {
-            {"abs", "fra", "fac", "log", "ce", "c", "<"},
-            {"rnd", "cel", "flr", "pi",  "e",  "(", ")"},
-            {"rad", "deg", "7",   "8",   "9",  "+", "-"},
-            {"sin", "csc", "4",   "5",   "6",  "*", "/"},
-            {"cos", "sec", "1",   "2",   "3",  "^", "%"},
-            {"tan", "cot", "#",   "0",   ".",  ",", "="},
-        },
-        {
-            {"abs", "fra", "fac", "log", "ce", "c", "<"},
-            {"rnd", "cel", "flr", "pi",  "e",  "(", ")"},
-            {"rad", "deg", "7",   "8",   "9",  "+", "-"},
-            {"asi", "acs", "4",   "5",   "6",  "*", "/"},
-            {"aco", "ase", "1",   "2",   "3",  "^", "%"},
-            {"ata", "act", "#",   "0",   ".",  ",", "="},
-        },
-        {
-            {"abs", "fra", "fac", "log", "ce", "c", "<"},
-            {"rnd", "cel", "flr", "pi",  "e",  "(", ")"},
-            {"rad", "deg", "7",   "8",   "9",  "+", "-"},
-            {"sih", "csh", "4",   "5",   "6",  "*", "/"},
-            {"coh", "seh", "1",   "2",   "3",  "^", "%"},
-            {"tah", "cth", "#",   "0",   ".",  ",", "="},
-        }
-    }
     local selected_preset = 1
 
-    local button_logic = {
-        abs = function(input, result) return "abs("..input..")", result end,
-        fra = function(input, result) return "fractional("..input..")", result end,
-        fac = function(input, result) return "factorial("..input..")", result end,
-        log = function(input, result) return "log("..input..",", result end,
+    -- Config extraction
+    local button_display_text_presets, button_color, button_click_color, button_font_color
+    if pocket then
+        button_display_text_presets = config.pocket.button_presets
+        button_color = config.pocket.button_color
+        button_click_color = config.pocket.button_click_color
+        button_font_color = config.pocket.button_font_color
+    else
+        button_display_text_presets = config.desktop.button_presets
+        button_color = config.desktop.button_color
+        button_click_color = config.desktop.button_click_color
+        button_font_color = config.desktop.button_font_color
+    end
+
+    local safe_env = config.common.eval_logic
+
+    local button_display_logic = { -- default logic
         ce  = function(input, result) return "", "" end,
         c   = function(input, result) return result, "" end,
-        rnd = function(input, result) return "round("..input..")", result end,
-        cel = function(input, result) return "ceil("..input..")", result end,
-        flr = function(input, result) return "floor("..input..")", result end,
-        pi  = function(input, result) return input.."pi", result end,
-        e   = function(input, result) return input.."e", result end,
-        rad = function(input, result) return "rad("..input..")", result end,
-        deg = function(input, result) return "deg("..input..")", result end,
-        sin = function(input, result) return "sin("..input..")", result end,
-        csc = function(input, result) return "cosec("..input..")", result end,
-        cos = function(input, result) return "cos("..input..")", result end,
-        sec = function(input, result) return "sec("..input..")", result end,
-        tan = function(input, result) return "tan("..input..")", result end,
-        cot = function(input, result) return "cot("..input..")", result end,
-        asi = function(input, result) return "asin("..input..")", result end,
-        aco = function(input, result) return "acos("..input..")", result end,
-        acs = function(input, result) return "acosec("..input..")", result end,
-        ase = function(input, result) return "asec("..input..")", result end,
-        ata = function(input, result) return "atan("..input..")", result end,
-        act = function(input, result) return "acot("..input..")", result end,
-        sih = function(input, result) return "sinh("..input..")", result end,
-        csh = function(input, result) return "cosech("..input..")", result end,
-        coh = function(input, result) return "cosh("..input..")", result end,
-        seh = function(input, result) return "sech("..input..")", result end,
-        tah = function(input, result) return "tanh("..input..")", result end,
-        cth = function(input, result) return "coth("..input..")", result end,
-        ["<"] = function(input, result) return input:sub(1, -2), result end,
-        ["("] = function(input, result) return input.."(", result end,
-        [")"] = function(input, result) return input..")", result end,
-        ["+"] = function(input, result) return input.."+", result end,
-        ["-"] = function(input, result) return input.."-", result end,
-        ["*"] = function(input, result) return input.."*", result end,
-        ["/"] = function(input, result) return input.."/", result end,
-        ["^"] = function(input, result) return input.."^", result end,
-        ["%"] = function(input, result) return input.."%", result end,
-        ["."] = function(input, result) return input..".", result end,
-        [","] = function(input, result) return input..",", result end,
         ["="] = function(input, result)
             local evalResult = ext.eval(input, safe_env)
             if evalResult == nil then
@@ -108,36 +47,10 @@ local function calculatorApp(parent, appdata_path, callback)
         end
     }
     for i=0,9 do
-        button_logic[tostring(i)] = function(input, result) return input..tostring(i), result end
+        button_display_logic[tostring(i)] = function(input, result) return input..tostring(i), result end
     end
+    ext.extend(button_display_logic, config.common.button_display_logic) -- adding/overriding logic from config
 
-    local button_color = {
-        {colors.green, colors.green, colors.green, colors.green, colors.red, colors.red, colors.red},
-        {colors.green, colors.green, colors.green, colors.cyan, colors.cyan, colors.orange, colors.orange},
-        {colors.green, colors.green, colors.gray, colors.gray, colors.gray, colors.orange, colors.orange},
-        {colors.lime, colors.lime, colors.gray, colors.gray, colors.gray, colors.orange, colors.orange},
-        {colors.lime, colors.lime, colors.gray, colors.gray, colors.gray, colors.orange, colors.orange},
-        {colors.lime, colors.lime, colors.lightGray, colors.gray, colors.lightGray, colors.orange, colors.blue},
-    }
-
-    local button_click_color = {
-        {colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray},
-        {colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray},
-        {colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray},
-        {colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray},
-        {colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray},
-        {colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray},
-    }
-
-    local button_font_color = {
-        {colors.black, colors.black, colors.black, colors.black, colors.white, colors.white, colors.white},
-        {colors.black, colors.black, colors.black, colors.black, colors.black, colors.black, colors.black},
-        {colors.black, colors.black, colors.white, colors.white, colors.white, colors.black, colors.black},
-        {colors.black, colors.black, colors.white, colors.white, colors.white, colors.black, colors.black},
-        {colors.black, colors.black, colors.white, colors.white, colors.white, colors.black, colors.black},
-        {colors.black, colors.black, colors.black, colors.white, colors.black, colors.black, colors.white},
-    }
-    
     -- Function
     local function updateInput(input)
         local max_input_len = parent:getWidth()
@@ -209,7 +122,7 @@ local function calculatorApp(parent, appdata_path, callback)
                     end)
                     :onClickUp(function(self)
                         self:setBackground(button_color[row][col])
-                        local input, result = button_logic[display_text](input_label:getText()..input_wrap_label:getText(), result_label:getText())
+                        local input, result = button_display_logic[display_text](input_label:getText()..input_wrap_label:getText(), result_label:getText())
                         updateDisplay(input, result)
                     end)
             end

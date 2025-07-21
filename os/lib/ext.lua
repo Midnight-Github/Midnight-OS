@@ -4,7 +4,7 @@
 -- Rednet functions
 
 -- Function to pair your sender with a receiver
-local function pairSender(receiver_id, protocol) 
+local function pairSender(receiver_id, protocol)
     while true do
         rednet.send(receiver_id, "pair", protocol)
         local received_id, msg, received_protocol = rednet.receive(protocol, 3)
@@ -167,6 +167,25 @@ local function iall(list)
     end
 
     return true
+end
+
+-- pythonl like extend function
+local function extend(dest, src)
+    local insertIndex = 1
+    for k, _ in pairs(dest) do
+        if type(k) == "number" and k >= insertIndex then
+            insertIndex = k + 1
+        end
+    end
+
+    for k, v in pairs(src) do
+        if type(k) == "number" then
+            dest[insertIndex] = v
+            insertIndex = insertIndex + 1
+        else
+            dest[k] = v
+        end
+    end
 end
 
 -- python like zip function
@@ -421,6 +440,7 @@ return {
     iany = iany,
     all = all,
     iall = iall,
+    extend = extend,
     zip = zip,
     split = split,
     contains = contains,
