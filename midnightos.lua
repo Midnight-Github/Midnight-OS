@@ -94,6 +94,7 @@ local function updateDynamicData()
         api.setDynamicData("x_coord", nil)
         api.setDynamicData("y_coord", nil)
         api.setDynamicData("z_coord", nil)
+        -- turn off gps to avoid refresh lag
     end
     
     api.setDynamicData("player_speed", metrics.getMovementSpeed(x, y, z))

@@ -4,36 +4,43 @@ return {
     desktop = {
         button_presets = {
             {
-                {"abs", "rnd", "fra", "", "7",   "8",   "9",  "pi", "e", "", "<"},
-                {"cel", "flr", "sin", "csc", "4",   "5",   "6",  "+", "-", "ce", "c"},
-                {"rad", "deg", "cos", "sec", "1",   "2",   "3",  "*", "/", "(", ")"},
-                {"fac", "log", "tan", "cot", "#",   "0",   ".",  "^", "%", ",", "="},
+                {"abs", "cel", "log", "fac", "7", "8", "9", "(", ")", "",  "<"},
+                {"rnd", "flr", "sin", "csc", "4", "5", "6", "+", "-", "c", "ce"},
+                {"fra", "deg", "cos", "sec", "1", "2", "3", "*", "/", "pi", "e"},
+                {"",    "rad", "tan", "cot", "#", "0", ".", "^", "%", ",",  "="},
+            },
+            {
+                {"abs", "cel", "log", "fac", "7", "8", "9", "(", ")", "",  "<"},
+                {"rnd", "flr", "asi", "acs", "4", "5", "6", "+", "-", "c", "ce"},
+                {"fra", "deg", "aco", "ase", "1", "2", "3", "*", "/", "pi", "e"},
+                {"",    "rad", "ata", "act", "#", "0", ".", "^", "%", ",",  "="},
+            },
+            {
+                {"abs", "cel", "log", "fac", "7", "8", "9", "(", ")", "",  "<"},
+                {"rnd", "flr", "sih", "csh", "4", "5", "6", "+", "-", "c", "ce"},
+                {"fra", "deg", "coh", "seh", "1", "2", "3", "*", "/", "pi", "e"},
+                {"",    "rad", "tah", "cth", "#", "0", ".", "^", "%", ",",  "="},
             },
         },
         button_color = {
-            {colors.green, colors.green, colors.green, colors.green, colors.red, colors.red, colors.red},
-            {colors.green, colors.green, colors.green, colors.cyan, colors.cyan, colors.orange, colors.orange},
-            {colors.green, colors.green, colors.gray, colors.gray, colors.gray, colors.orange, colors.orange},
-            {colors.lime, colors.lime, colors.gray, colors.gray, colors.gray, colors.orange, colors.orange},
-            {colors.lime, colors.lime, colors.gray, colors.gray, colors.gray, colors.orange, colors.orange},
-            {colors.lime, colors.lime, colors.lightGray, colors.gray, colors.lightGray, colors.orange, colors.blue},
+            {colors.cyan, colors.green, colors.green, colors.green, colors.gray,      colors.gray, colors.gray,      colors.orange, colors.orange, colors.red,    colors.red},
+            {colors.cyan, colors.green, colors.lime,  colors.lime,  colors.gray,      colors.gray, colors.gray,      colors.orange, colors.orange, colors.red,    colors.red},
+            {colors.cyan, colors.green, colors.lime,  colors.lime,  colors.gray,      colors.gray, colors.gray,      colors.orange, colors.orange, colors.cyan,   colors.cyan},
+            {colors.cyan, colors.green, colors.lime,  colors.lime,  colors.lightGray, colors.gray, colors.lightGray, colors.orange, colors.orange, colors.orange, colors.blue}
         },
         button_click_color = {
-            {colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray},
-            {colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray},
-            {colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray},
-            {colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray},
-            {colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray},
-            {colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray},
+            {colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.red,       colors.lightGray},
+            {colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray},
+            {colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray},
+            {colors.cyan,      colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray, colors.lightGray}
         },
         button_font_color = {
-            {colors.black, colors.black, colors.black, colors.black, colors.white, colors.white, colors.white},
-            {colors.black, colors.black, colors.black, colors.black, colors.black, colors.black, colors.black},
-            {colors.black, colors.black, colors.white, colors.white, colors.white, colors.black, colors.black},
-            {colors.black, colors.black, colors.white, colors.white, colors.white, colors.black, colors.black},
-            {colors.black, colors.black, colors.white, colors.white, colors.white, colors.black, colors.black},
-            {colors.black, colors.black, colors.black, colors.white, colors.black, colors.black, colors.white},
-        }
+            {colors.black, colors.black, colors.black, colors.black, colors.white, colors.white, colors.white, colors.black, colors.black, colors.white, colors.white},
+            {colors.black, colors.black, colors.black, colors.black, colors.white, colors.white, colors.white, colors.black, colors.black, colors.white, colors.white},
+            {colors.black, colors.black, colors.black, colors.black, colors.white, colors.white, colors.white, colors.black, colors.black, colors.black, colors.black},
+            {colors.black, colors.black, colors.black, colors.black, colors.black, colors.white, colors.black, colors.black, colors.black, colors.black, colors.white}
+        },
+        input_wrap_height = 4
     },
     pocket = {
         button_presets = {
@@ -85,7 +92,8 @@ return {
             {colors.black, colors.black, colors.white, colors.white, colors.white, colors.black, colors.black},
             {colors.black, colors.black, colors.white, colors.white, colors.white, colors.black, colors.black},
             {colors.black, colors.black, colors.black, colors.white, colors.black, colors.black, colors.white},
-        }
+        },
+        input_wrap_height = 2
     },
     common = {
         button_display_logic = {

@@ -4,22 +4,26 @@ local config = require("os/app/calculator/config")
 local function calculatorApp(parent, appdata_path, callback)
     -- Variables
     local app = {}
-    local input_label, input_wrap_label, result_label
+    local main_frame
+    local input_textfield, result_textfield
     local button_preset_frames = {}
     local selected_preset = 1
 
     -- Config extraction
     local button_display_text_presets, button_color, button_click_color, button_font_color
+    local input_wrap_height
     if pocket then
         button_display_text_presets = config.pocket.button_presets
         button_color = config.pocket.button_color
         button_click_color = config.pocket.button_click_color
         button_font_color = config.pocket.button_font_color
+        input_wrap_height = config.pocket.input_wrap_height
     else
         button_display_text_presets = config.desktop.button_presets
         button_color = config.desktop.button_color
         button_click_color = config.desktop.button_click_color
         button_font_color = config.desktop.button_font_color
+        input_wrap_height = config.desktop.input_wrap_height
     end
 
     local safe_env = config.common.eval_logic
@@ -44,6 +48,9 @@ local function calculatorApp(parent, appdata_path, callback)
             button_preset_frames[selected_preset]:setVisible(true)
 
             return input, result
+        end,
+        [""] = function(input, result)
+            return input, result
         end
     }
     for i=0,9 do
@@ -52,48 +59,42 @@ local function calculatorApp(parent, appdata_path, callback)
     ext.extend(button_display_logic, config.common.button_display_logic) -- adding/overriding logic from config
 
     -- Function
-    local function updateInput(input)
-        local max_input_len = parent:getWidth()
-        if #input > max_input_len then
-            input_label:setText(input:sub(1, max_input_len))
-            input_wrap_label:setText(input:sub(max_input_len + 1))
-        else
-            input_label:setText(input)
-        end
+    local function update()
+        input_textfield:setFocused(false)
+        result_textfield:setFocused(false)
+    end
+
+    local function wordWrap(text, width)
+        local lines = ext.wordWrap(text, width)
+        return table.concat(lines, "\n")
     end
 
     local function updateDisplay(input, result)
-        input_label:setText("")
-        input_wrap_label:setText("")
-        result_label:setText("")
-
-        updateInput(input)
-        result_label:setText(result)
+        input_textfield:setText(wordWrap(input, parent:getWidth()))
+        input_textfield:setScrollY(0)
+        result_textfield:setText(wordWrap(result, parent:getWidth()))
+        result_textfield:setScrollY(0)
     end
 
     -- Main
-    local main_frame = parent:addFrame()
+    main_frame = parent:addFrame()
         :setPosition(1, 2)
         :setSize(parent:getWidth(), parent:getHeight() - 2)
         :setBackground(colors.black)
 
-    input_label = main_frame:addLabel()
-        :setText("")
+    input_textfield = main_frame:addTextBox()
         :setPosition(1, 1)
-        :setSize(main_frame:getWidth(), 1)
+        :setSize(main_frame:getWidth(), input_wrap_height + 1)
+        :setBackground(colors.black)
         :setForeground(colors.lightGray)
+        :setEditable(false)
 
-    input_wrap_label = main_frame:addLabel()
-        :setText("")
-        :setPosition(1, 2)
-        :setSize(main_frame:getWidth(), 1)
-        :setForeground(colors.lightGray)
-
-    result_label = main_frame:addLabel()
-        :setText("")
-        :setPosition(1, 4)
-        :setSize(main_frame:getWidth(), 1)
+    result_textfield = main_frame:addTextBox()
+        :setPosition(1, input_textfield:getHeight() + 1)
+        :setSize(main_frame:getWidth(), 3)
+        :setBackground(colors.black)
         :setForeground(colors.white)
+        :setEditable(false)
 
     local button_frame_width = #button_display_text_presets[1][1]*4 - 1
     local button_frame_height = #button_display_text_presets[1]*2 - 1
@@ -122,7 +123,7 @@ local function calculatorApp(parent, appdata_path, callback)
                     end)
                     :onClickUp(function(self)
                         self:setBackground(button_color[row][col])
-                        local input, result = button_display_logic[display_text](input_label:getText()..input_wrap_label:getText(), result_label:getText())
+                        local input, result = button_display_logic[display_text](string.gsub(input_textfield:getText(), "\n", ""), string.gsub(result_textfield:getText(), "\n", ""))
                         updateDisplay(input, result)
                     end)
             end
@@ -131,6 +132,7 @@ local function calculatorApp(parent, appdata_path, callback)
     button_preset_frames[selected_preset]:setVisible(true)
 
     app.onBack = callback.hide_app
+    app.update = update
 
     return app
 end
