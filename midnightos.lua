@@ -85,20 +85,24 @@ local function updateStatusBar()
 end
 
 local function updateDynamicData()
-    local x, y, z = gps.locate()
-    if x and y and z then
-        api.setDynamicData("x_coord", ext.round(x))
-        api.setDynamicData("y_coord", ext.round(y))
-        api.setDynamicData("z_coord", ext.round(z))
-    else
-        api.setDynamicData("x_coord", nil)
-        api.setDynamicData("y_coord", nil)
-        api.setDynamicData("z_coord", nil)
-        -- turn off gps to avoid refresh lag
+    if config.settings.gps_enabled then
+        local x, y, z = gps.locate()
+        if x and y and z then
+            api.setDynamicData("x_coord", ext.round(x))
+            api.setDynamicData("y_coord", ext.round(y))
+            api.setDynamicData("z_coord", ext.round(z))
+        else
+            api.setDynamicData("x_coord", nil)
+            api.setDynamicData("y_coord", nil)
+            api.setDynamicData("z_coord", nil)
+
+            config.settings.gps_enabled = false
+            api.updateConfig(config)
+        end
+
+        api.setDynamicData("player_speed", metrics.getMovementSpeed(x, y, z))
+        api.setDynamicData("player_direction", metrics.getMovementDirection(x, z))
     end
-    
-    api.setDynamicData("player_speed", metrics.getMovementSpeed(x, y, z))
-    api.setDynamicData("player_direction", metrics.getMovementDirection(x, z))
 
     ---@diagnostic disable-next-line: undefined-field
     local game_day = os.day()

@@ -20,5 +20,6 @@ return {
     max_msg_archive_file_size = 5120,
     hours_off_set_from_utc = 0,
     max_msg_archive_files = 10,
+    gps_enabled = true,
   },
 }
