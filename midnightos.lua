@@ -259,8 +259,10 @@ app_container_frame = slide_frame:addFrame()
 -- app loader
 local apps = {}
 for _, app_dir_name in ipairs(fs.list("os/app")) do
-    local app = require("os/app/" .. app_dir_name .. "/main")
-    apps[app_dir_name] = app
+    if ext.contains(config.app_display_order, app_dir_name) then
+        local app = require("os/app/" .. app_dir_name .. "/main")
+        apps[app_dir_name] = app
+    end
 end
 
 for app_name, app in pairs(apps) do
@@ -272,9 +274,6 @@ for app_name, app in pairs(apps) do
     })
 
     if not is_valid_app then -- invalid app
-        goto skip_app_from_list
-    end
-    if not ext.indexOf(config.app_display_order, app_name) then -- disabled app
         goto skip_app_from_list
     end
 
