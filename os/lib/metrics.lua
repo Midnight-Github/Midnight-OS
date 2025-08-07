@@ -5,7 +5,7 @@ local emath = require("os/lib/ext/math")
 -- Varibales
 local last_pos, last_time
 local last_dir_pos
-local month_names = {"Spring", "Summer", "Autumn", "Winter"}
+local seasons = {"Spring", "Summer", "Autumn", "Winter"}
 
 -- Format time as HH:MM from hours (float)
 local function formatTime(time_in_hours)
@@ -30,7 +30,7 @@ end
 -- Return season name based on day (fabric seasons mod)
 local function getFabricSeasonsSeason(day)
     local month = math.floor(((day - 1) % 112) / 28) + 1
-    return month_names[month]
+    return seasons[month]
 end
 
 -- Format coordinates
