@@ -1,4 +1,4 @@
-local ext = require("os/lib/ext")
+local emath = require("os/lib/ext/math")
 
 return {
     desktop = {
@@ -139,13 +139,13 @@ return {
             [","] = function(input, result) return input..",", result end,
         },
         eval_logic = {
-            abs = math.abs, fractional = ext.fractionalPart, factorial = ext.factorial, log = math.log,
-            round = ext.round, ceil = math.ceil, floor = math.floor,
+            abs = math.abs, fractional = emath.fractionalPart, factorial = emath.factorial, log = math.log,
+            round = emath.round, ceil = math.ceil, floor = math.floor,
             pi = math.pi, e = math.exp(1),
             rad = math.rad, deg = math.deg,
-            sin = math.sin, csc = ext.cosec, cos = math.cos, sec = ext.sec, tan = math.tan, cot = ext.cot,
-            asin = math.asin, acos = math.acos, atan = math.atan, asec = ext.asec, acot = ext.acot, acosec = ext.acosec,
-            sinh = ext.sinh, cosh = ext.cosh, tanh = ext.tanh, sech = ext.sech, coth = ext.coth, cosech = ext.cosech
+            sin = math.sin, csc = emath.cosec, cos = math.cos, sec = emath.sec, tan = math.tan, cot = emath.cot,
+            asin = math.asin, acos = math.acos, atan = math.atan, asec = emath.asec, acot = emath.acot, acosec = emath.acosec,
+            sinh = emath.sinh, cosh = emath.cosh, tanh = emath.tanh, sech = emath.sech, coth = emath.coth, cosech = emath.cosech
         }
     }
 }

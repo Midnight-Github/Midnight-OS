@@ -1,9 +1,9 @@
 local bext = require("os/lib/basalt/bext")
 local api = require("os/lib/api")
-local ext = require("os/lib/ext")
+local eui = require("os/lib/ext/ui")
+local etable = require("os/lib/ext/table")
 local config = require("os/config")
 local metrics = require("os/lib/metrics")
-
 
 local function infoApp(parent, appdata_path, callback)
     -- Config
@@ -40,14 +40,14 @@ local function infoApp(parent, appdata_path, callback)
 
         local section_width = math.floor(total_width/squeeze_ratio)
         if side == "left" then
-            return ext.getCenterPos(section_width, text_width)
+            return eui.getCenterPos(section_width, text_width)
 
         elseif side == "mid" or side == "middle" then
-            return ext.getCenterPos(total_width, text_width)
+            return eui.getCenterPos(total_width, text_width)
 
         elseif side == "right" then
             local section_start = total_width - section_width + 1
-            return section_start + ext.getCenterPos(section_width, text_width)
+            return section_start + eui.getCenterPos(section_width, text_width)
 
         else
             error("Invalid alignment side: " .. tostring(side))
@@ -64,7 +64,7 @@ local function infoApp(parent, appdata_path, callback)
 
     local function addTitleBar(master, y, title)
         master:addLabel()
-            :setPosition(ext.getCenterPos(master:getWidth(), #title), y)
+            :setPosition(eui.getCenterPos(master:getWidth(), #title), y)
             :setText(title)
             :setBackground(colors.black)
             :setForeground(colors.white)
@@ -120,7 +120,7 @@ local function infoApp(parent, appdata_path, callback)
             :setSize(master:getWidth(), 6)
             :setBackground(colors.black)
 
-        local data_keys = ext.getKeys(data_info)
+        local data_keys = etable.getKeys(data_info)
 
         local section_width = math.floor(master:getWidth() / 3)
         local left_option = data_frame:addDropdown()
@@ -130,20 +130,20 @@ local function infoApp(parent, appdata_path, callback)
             :setSize(section_width - 1, 1)
             :addItem({text = "None", args = {data_key = nil}})
         addOptions(left_option, data_keys)
-        left_option:selectItem(ext.indexOf(data_keys, config.status_bar_info.left))
+        left_option:selectItem(etable.indexOf(data_keys, config.status_bar_info.left))
         left_option:onSelect(function(self, event, item)
             config.status_bar_info.left = item.args.data_key
             api.updateConfig(config)
         end)
 
         local mid_option = data_frame:addDropdown()
-            :setPosition(ext.getCenterPos(master:getWidth(), section_width - 1), 1)
+            :setPosition(eui.getCenterPos(master:getWidth(), section_width - 1), 1)
             :setBackground(colors.gray)
             :setForeground(colors.white)
             :setSize(section_width - 1, 1)
             :addItem({text = "None", args = {data_key = nil}})
         addOptions(mid_option, data_keys)
-        mid_option:selectItem(ext.indexOf(data_keys, config.status_bar_info.mid))
+        mid_option:selectItem(etable.indexOf(data_keys, config.status_bar_info.mid))
         mid_option:onSelect(function(self, event, item)
             config.status_bar_info.mid = item.args.data_key
             api.updateConfig(config)
@@ -156,7 +156,7 @@ local function infoApp(parent, appdata_path, callback)
             :setSize(section_width - 1, 1)
             :addItem({text = "None", args = {data_key = nil}})
         addOptions(right_option, data_keys)
-        right_option:selectItem(ext.indexOf(data_keys, config.status_bar_info.right))
+        right_option:selectItem(etable.indexOf(data_keys, config.status_bar_info.right))
         right_option:onSelect(function(self, event, item)
             config.status_bar_info.right = item.args.data_key
             api.updateConfig(config)
@@ -182,13 +182,13 @@ local function infoApp(parent, appdata_path, callback)
                 end
 
                 if #new_data ~= #old_data then
-                    if ext.contains(left_data_key, key) then -- left section
+                    if etable.contains(left_data_key, key) then -- left section
                         data_label[key]:setPosition(getAlignmentPos(frame_width, #new_data, "left", squeeze_ratio), 1)
 
-                    elseif ext.contains(mid_data_key, key) then -- mid section
+                    elseif etable.contains(mid_data_key, key) then -- mid section
                         data_label[key]:setPosition(getAlignmentPos(frame_width, #new_data), 1)
 
-                    elseif ext.contains(right_data_key, key) then -- right section
+                    elseif etable.contains(right_data_key, key) then -- right section
                         data_label[key]:setPosition(getAlignmentPos(frame_width, #new_data, "right", squeeze_ratio), 1)
                     end
 
@@ -208,7 +208,7 @@ local function infoApp(parent, appdata_path, callback)
         :setBackground(colors.black)
     bext.addVarticalScrolling(main_frame)
 
-    local zipped = ext.zip(section_title, left_data_key, mid_data_key, right_data_key)
+    local zipped = etable.zip(section_title, left_data_key, mid_data_key, right_data_key)
     local y = 1
     for i = 1, #zipped do
         local title, left_key, mid_key, right_key = table.unpack(zipped[i])

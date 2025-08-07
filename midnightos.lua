@@ -1,7 +1,11 @@
 -- imports
 local basalt = require("os/lib/basalt/main")
 local bext = require("os/lib/basalt/bext")
-local ext = require("os/lib/ext")
+local emath = require("os/lib/ext/math")
+local etable = require("os/lib/ext/table")
+local ebool = require("os/lib/ext/bool")
+local eui = require("os/lib/ext/ui")
+local eio = require("os/lib/ext/io")
 local config = require("os/config")
 local const = require("os/const")
 local metrics = require("os/lib/metrics")
@@ -24,8 +28,11 @@ local speaker, speaker_side
 
 -- functions
 local function setup()
-    if not fs.exists(appdata_path) then
-        fs.makeDir(appdata_path)
+    eio.ensureDirExists(appdata_path)
+
+    if config.settings.enable_gps_onstartup then
+        config.settings.gps_enabled = true
+        api.updateConfig(config)
     end
 end
 
@@ -88,9 +95,9 @@ local function updateDynamicData()
     if config.settings.gps_enabled then
         local x, y, z = gps.locate()
         if x and y and z then
-            api.setDynamicData("x_coord", ext.round(x))
-            api.setDynamicData("y_coord", ext.round(y))
-            api.setDynamicData("z_coord", ext.round(z))
+            api.setDynamicData("x_coord", emath.round(x))
+            api.setDynamicData("y_coord", emath.round(y))
+            api.setDynamicData("z_coord", emath.round(z))
         else
             api.setDynamicData("x_coord", nil)
             api.setDynamicData("y_coord", nil)
@@ -259,14 +266,14 @@ app_container_frame = slide_frame:addFrame()
 -- app loader
 local apps = {}
 for _, app_dir_name in ipairs(fs.list("os/app")) do
-    if ext.contains(config.app_display_order, app_dir_name) then
+    if etable.contains(config.app_display_order, app_dir_name) then
         local app = require("os/app/" .. app_dir_name .. "/main")
         apps[app_dir_name] = app
     end
 end
 
 for app_name, app in pairs(apps) do
-    local is_valid_app = ext.iany({
+    local is_valid_app = ebool.iany({
         type(app) == "table",
         app.display_text and type(app.display_text) == "string",
         app.icon and type(app.icon) == "function",
@@ -278,7 +285,7 @@ for app_name, app in pairs(apps) do
     end
 
     local frame = app_list_frame:addFrame()
-        :setPosition(2, 1 + 4*(ext.indexOf(config.app_display_order, app_name) - 1))
+        :setPosition(2, 1 + 4*(etable.indexOf(config.app_display_order, app_name) - 1))
         :setSize(app_list_frame:getWidth() - 2, 3)
 
     local icon_canvas_frame = frame:addFrame()
@@ -368,7 +375,7 @@ tray_bar = main:addFrame()
 back_button = tray_bar:addButton()
     :setText("<")
     :setSize(3, 1)
-    :setPosition(ext.getCenterPos(tray_bar:getWidth()/3, 1), 1)
+    :setPosition(eui.getCenterPos(tray_bar:getWidth()/3, 1), 1)
     :setBackground("{self.clicked and colors.lightGray or colors.red}")
     :setForeground(colors.white)
     :onClickUp(function()
@@ -380,7 +387,7 @@ back_button = tray_bar:addButton()
 home_button = tray_bar:addButton()
     :setText("[+]")
     :setSize(3, 1)
-    :setPosition(ext.getCenterPos(tray_bar:getWidth(), 3), 1)
+    :setPosition(eui.getCenterPos(tray_bar:getWidth(), 3), 1)
     :setBackground("{self.clicked and colors.lightGray or colors.gray}")
     :setForeground(colors.white)
     :onClickUp(function()
@@ -393,7 +400,7 @@ home_button = tray_bar:addButton()
 settings_button = tray_bar:addButton()
     :setText("[*]")
     :setSize(3, 1)
-    :setPosition(tray_bar:getWidth() - ext.getCenterPos(tray_bar:getWidth()/3, 3) - 2, 1)
+    :setPosition(tray_bar:getWidth() - eui.getCenterPos(tray_bar:getWidth()/3, 3) - 2, 1)
     :setBackground("{self.clicked and colors.lightGray or colors.gray}")
     :setForeground(colors.white)
 
