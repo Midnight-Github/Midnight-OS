@@ -70,24 +70,30 @@ local function getFormattedDynamicData(key)
 end
 
 local function updateStatusBar()
+    local left_label = status_left_label
+    local mid_label = status_mid_label
+    local right_label = status_right_label
+    local frame = status_frame
+    local getText = function(label) return label:getText() end
+
     local left_status_text = getFormattedDynamicData(config.status_bar_info.left) or ""
     local mid_status_text = getFormattedDynamicData(config.status_bar_info.mid) or ""
     local right_status_text = getFormattedDynamicData(config.status_bar_info.right) or ""
 
-    if #left_status_text ~= #status_left_label:getText() then
-        status_mid_label:setPosition(#left_status_text + 2, 1)
+    if #left_status_text ~= #getText(left_label) then
+        mid_label:setPosition(#left_status_text + 2, 1)
     end
-    if #right_status_text ~= #status_right_label:getText() then
-        status_right_label:setPosition(status_frame:getWidth() - #right_status_text + 1, 1)
+    if #right_status_text ~= #getText(right_label) then
+        right_label:setPosition(frame:getWidth() - #right_status_text + 1, 1)
     end
-    if left_status_text ~= status_left_label:getText() then
-        status_left_label:setText(left_status_text)
+    if left_status_text ~= getText(left_label) then
+        left_label:setText(left_status_text)
     end
-    if mid_status_text ~= status_mid_label:getText() then
-        status_mid_label:setText(mid_status_text)
+    if mid_status_text ~= getText(mid_label) then
+        mid_label:setText(mid_status_text)
     end
-    if right_status_text ~= status_right_label:getText() then
-        status_right_label:setText(right_status_text)
+    if right_status_text ~= getText(right_label) then
+        right_label:setText(right_status_text)
     end
 end
 
@@ -136,22 +142,25 @@ local function update()
 end
 
 local function updateApp()
-    if not current_app then return end
-    if not app_data[current_app].frame.visible then return end
-    if not app_data[current_app].update then return end
-    app_data[current_app].update()
+    local app = current_app and app_data[current_app]
+    if not app then return end
+    if not app.frame.visible then return end
+    if not app.update then return end
+    app.update()
 end
 
 local function triggerAppFunction(app_name, func_name, ...)
     if app_name == "all" then
         for _, app in pairs(app_data) do
-            if app[func_name] then
-                app[func_name](...)
+            local fn = app[func_name]
+            if fn then
+                fn(...)
             end
         end
     else
-        if app_data[app_name] and app_data[app_name][func_name] then
-            app_data[app_name][func_name](...)
+        local app = app_data[app_name]
+        if app and app[func_name] then
+            app[func_name](...)
         end
     end
 end
@@ -173,9 +182,10 @@ local function grabTraffic()
 end
 
 local function processTraffic()
+    local tqueue = traffic_queue
     while true do
-        if #traffic_queue > 0 then
-            local msg = table.remove(traffic_queue, 1)
+        if #tqueue > 0 then
+            local msg = table.remove(tqueue, 1)
             triggerAppFunction("all", "onTraffic", table.unpack(msg))
         else
             sleep(0.2)
@@ -212,11 +222,12 @@ local function connectSpeaker()
 end
 
 local function mainLoop()
+    local refresh_delay = config.settings.refresh_delay
     while true do
         update()
         updateApp()
         triggerAppFunction("all", "backgroundUpdate")
-        sleep(config.settings.refresh_delay)
+        sleep(refresh_delay)
     end
 end
 

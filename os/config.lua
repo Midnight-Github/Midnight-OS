@@ -18,9 +18,9 @@ return {
     hours_off_set_from_utc = 0,
     display_name = "Unknown",
     gps_enabled = true,
+    peripheral_module_ids = {},
     max_msg_archive_file_size = 5120,
     enable_gps_onstartup = true,
-    peripheral_module_ids = {},
     max_msg_archive_files = 10,
   },
 }
