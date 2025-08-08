@@ -14,8 +14,6 @@ Midnight-OS is a modular, extensible operating system for [CC: Tweaked](https://
 
 ## Directory Structure
 
-## Directory Structure
-
 ```
 midnightos.lua                # Main OS launcher
 startup.lua                   # Startup script
@@ -30,7 +28,14 @@ os/
   const.lua                   # Constants
   lib/
     api.lua                   # API for config and system functions
-    ext.lua                   # Utility functions (math, string, file, etc.)
+    ext/
+      math.lua                # Math utilities
+      table.lua               # Table utilities
+      string.lua              # String utilities
+      bool.lua                # Boolean utilities
+      ui.lua                  # UI helpers
+      io.lua                  # IO helpers
+      utils.lua               # Misc utilities
     metrics.lua               # Data processing
     basalt/
       bext.lua                # Basalt UI extensions
@@ -38,6 +43,7 @@ os/
   app/
     calculator/
       main.lua                # Calculator app
+      config.lua              # Calculator config
     chat/
       main.lua                # Chat app (with user/message storage)
     info/
@@ -46,6 +52,7 @@ os/
       main.lua                # Terminal emulator app
     waystone/
       main.lua                # Waystone navigation app (WIP)
+  appdata/                    #
 ```
 
 ## Installation
