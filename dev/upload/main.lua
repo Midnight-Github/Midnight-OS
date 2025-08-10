@@ -34,7 +34,6 @@ local function uploadFile(dir_path, blacklist)
             else
                 git_path[full_path] = git_common_path..full_path
                 print("Uploaded: "..full_path)
-                --sleep(1)
             end
         end
     end
