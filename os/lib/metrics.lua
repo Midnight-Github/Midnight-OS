@@ -1,11 +1,11 @@
 -- Imports
 local config = require("os/config")
-local ext = require("os/lib/ext")
+local emath = require("os/lib/ext/math")
 
 -- Varibales
 local last_pos, last_time
 local last_dir_pos
-local month_names = {"Spring", "Summer", "Autumn", "Winter"}
+local seasons = {"Spring", "Summer", "Autumn", "Winter"}
 
 -- Format time as HH:MM from hours (float)
 local function formatTime(time_in_hours)
@@ -30,13 +30,13 @@ end
 -- Return season name based on day (fabric seasons mod)
 local function getFabricSeasonsSeason(day)
     local month = math.floor(((day - 1) % 112) / 28) + 1
-    return month_names[month]
+    return seasons[month]
 end
 
 -- Format coordinates
 local function formatCoords(x, y, z)
     if not x or not y or not z then return nil end
-    return string.format("%d %d %d", ext.round(x), ext.round(y), ext.round(z))
+    return string.format("%d %d %d", emath.round(x), emath.round(y), emath.round(z))
 end
 
 -- Calculate player speed in blocks/sec
@@ -55,7 +55,7 @@ local function getMovementSpeed(x, y, z)
     local dist = math.sqrt(dx*dx + dy*dy + dz*dz)
     last_pos = {x = x, y = y, z = z}
     last_time = now
-    return ext.round(dist / dt, 0.01)
+    return emath.round(dist / dt, 0.01)
 end
 
 -- Calculate player facing direction (8 compass points)

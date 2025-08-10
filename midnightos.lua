@@ -1,7 +1,11 @@
 -- imports
 local basalt = require("os/lib/basalt/main")
 local bext = require("os/lib/basalt/bext")
-local ext = require("os/lib/ext")
+local emath = require("os/lib/ext/math")
+local etable = require("os/lib/ext/table")
+local ebool = require("os/lib/ext/bool")
+local eui = require("os/lib/ext/ui")
+local eio = require("os/lib/ext/io")
 local config = require("os/config")
 local const = require("os/const")
 local metrics = require("os/lib/metrics")
@@ -24,8 +28,11 @@ local speaker, speaker_side
 
 -- functions
 local function setup()
-    if not fs.exists(appdata_path) then
-        fs.makeDir(appdata_path)
+    eio.ensureDirExists(appdata_path)
+
+    if config.settings.enable_gps_onstartup then
+        config.settings.gps_enabled = true
+        api.updateConfig(config)
     end
 end
 
@@ -63,24 +70,30 @@ local function getFormattedDynamicData(key)
 end
 
 local function updateStatusBar()
+    local left_label = status_left_label
+    local mid_label = status_mid_label
+    local right_label = status_right_label
+    local frame = status_frame
+    local getText = function(label) return label:getText() end
+
     local left_status_text = getFormattedDynamicData(config.status_bar_info.left) or ""
     local mid_status_text = getFormattedDynamicData(config.status_bar_info.mid) or ""
     local right_status_text = getFormattedDynamicData(config.status_bar_info.right) or ""
 
-    if #left_status_text ~= #status_left_label:getText() then
-        status_mid_label:setPosition(#left_status_text + 2, 1)
+    if #left_status_text ~= #getText(left_label) then
+        mid_label:setPosition(#left_status_text + 2, 1)
     end
-    if #right_status_text ~= #status_right_label:getText() then
-        status_right_label:setPosition(status_frame:getWidth() - #right_status_text + 1, 1)
+    if #right_status_text ~= #getText(right_label) then
+        right_label:setPosition(frame:getWidth() - #right_status_text + 1, 1)
     end
-    if left_status_text ~= status_left_label:getText() then
-        status_left_label:setText(left_status_text)
+    if left_status_text ~= getText(left_label) then
+        left_label:setText(left_status_text)
     end
-    if mid_status_text ~= status_mid_label:getText() then
-        status_mid_label:setText(mid_status_text)
+    if mid_status_text ~= getText(mid_label) then
+        mid_label:setText(mid_status_text)
     end
-    if right_status_text ~= status_right_label:getText() then
-        status_right_label:setText(right_status_text)
+    if right_status_text ~= getText(right_label) then
+        right_label:setText(right_status_text)
     end
 end
 
@@ -88,9 +101,9 @@ local function updateDynamicData()
     if config.settings.gps_enabled then
         local x, y, z = gps.locate()
         if x and y and z then
-            api.setDynamicData("x_coord", ext.round(x))
-            api.setDynamicData("y_coord", ext.round(y))
-            api.setDynamicData("z_coord", ext.round(z))
+            api.setDynamicData("x_coord", emath.round(x))
+            api.setDynamicData("y_coord", emath.round(y))
+            api.setDynamicData("z_coord", emath.round(z))
         else
             api.setDynamicData("x_coord", nil)
             api.setDynamicData("y_coord", nil)
@@ -129,22 +142,25 @@ local function update()
 end
 
 local function updateApp()
-    if not current_app then return end
-    if not app_data[current_app].frame.visible then return end
-    if not app_data[current_app].update then return end
-    app_data[current_app].update()
+    local app = current_app and app_data[current_app]
+    if not app then return end
+    if not app.frame.visible then return end
+    if not app.update then return end
+    app.update()
 end
 
 local function triggerAppFunction(app_name, func_name, ...)
     if app_name == "all" then
         for _, app in pairs(app_data) do
-            if app[func_name] then
-                app[func_name](...)
+            local fn = app[func_name]
+            if fn then
+                fn(...)
             end
         end
     else
-        if app_data[app_name] and app_data[app_name][func_name] then
-            app_data[app_name][func_name](...)
+        local app = app_data[app_name]
+        if app and app[func_name] then
+            app[func_name](...)
         end
     end
 end
@@ -166,9 +182,10 @@ local function grabTraffic()
 end
 
 local function processTraffic()
+    local tqueue = traffic_queue
     while true do
-        if #traffic_queue > 0 then
-            local msg = table.remove(traffic_queue, 1)
+        if #tqueue > 0 then
+            local msg = table.remove(tqueue, 1)
             triggerAppFunction("all", "onTraffic", table.unpack(msg))
         else
             sleep(0.2)
@@ -205,11 +222,12 @@ local function connectSpeaker()
 end
 
 local function mainLoop()
+    local refresh_delay = config.settings.refresh_delay
     while true do
         update()
         updateApp()
         triggerAppFunction("all", "backgroundUpdate")
-        sleep(config.settings.refresh_delay)
+        sleep(refresh_delay)
     end
 end
 
@@ -259,12 +277,14 @@ app_container_frame = slide_frame:addFrame()
 -- app loader
 local apps = {}
 for _, app_dir_name in ipairs(fs.list("os/app")) do
-    local app = require("os/app/" .. app_dir_name .. "/main")
-    apps[app_dir_name] = app
+    if etable.contains(config.app_display_order, app_dir_name) then
+        local app = require("os/app/" .. app_dir_name .. "/main")
+        apps[app_dir_name] = app
+    end
 end
 
 for app_name, app in pairs(apps) do
-    local is_valid_app = ext.iany({
+    local is_valid_app = ebool.iany({
         type(app) == "table",
         app.display_text and type(app.display_text) == "string",
         app.icon and type(app.icon) == "function",
@@ -274,12 +294,9 @@ for app_name, app in pairs(apps) do
     if not is_valid_app then -- invalid app
         goto skip_app_from_list
     end
-    if not ext.indexOf(config.app_display_order, app_name) then -- disabled app
-        goto skip_app_from_list
-    end
 
     local frame = app_list_frame:addFrame()
-        :setPosition(2, 1 + 4*(ext.indexOf(config.app_display_order, app_name) - 1))
+        :setPosition(2, 1 + 4*(etable.indexOf(config.app_display_order, app_name) - 1))
         :setSize(app_list_frame:getWidth() - 2, 3)
 
     local icon_canvas_frame = frame:addFrame()
@@ -369,7 +386,7 @@ tray_bar = main:addFrame()
 back_button = tray_bar:addButton()
     :setText("<")
     :setSize(3, 1)
-    :setPosition(ext.getCenterPos(tray_bar:getWidth()/3, 1), 1)
+    :setPosition(eui.getCenterPos(tray_bar:getWidth()/3, 1), 1)
     :setBackground("{self.clicked and colors.lightGray or colors.red}")
     :setForeground(colors.white)
     :onClickUp(function()
@@ -381,7 +398,7 @@ back_button = tray_bar:addButton()
 home_button = tray_bar:addButton()
     :setText("[+]")
     :setSize(3, 1)
-    :setPosition(ext.getCenterPos(tray_bar:getWidth(), 3), 1)
+    :setPosition(eui.getCenterPos(tray_bar:getWidth(), 3), 1)
     :setBackground("{self.clicked and colors.lightGray or colors.gray}")
     :setForeground(colors.white)
     :onClickUp(function()
@@ -394,7 +411,7 @@ home_button = tray_bar:addButton()
 settings_button = tray_bar:addButton()
     :setText("[*]")
     :setSize(3, 1)
-    :setPosition(tray_bar:getWidth() - ext.getCenterPos(tray_bar:getWidth()/3, 3) - 2, 1)
+    :setPosition(tray_bar:getWidth() - eui.getCenterPos(tray_bar:getWidth()/3, 3) - 2, 1)
     :setBackground("{self.clicked and colors.lightGray or colors.gray}")
     :setForeground(colors.white)
 

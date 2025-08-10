@@ -1,5 +1,5 @@
 -- import
-local ext = require("os/lib/ext")
+local eio = require("os/lib/ext/io")
 local config = require("os/config")
 
 local dynamic_data = {
@@ -28,7 +28,7 @@ end
 
 -- config
 local function updateConfig(config_data)
-    ext.withSafeFile("os/config.lua", "w", function(file)
+    eio.withSafeFile("os/config.lua", "w", function(file)
         file.write("return " .. textutils.serialize(config_data))
     end)
 end

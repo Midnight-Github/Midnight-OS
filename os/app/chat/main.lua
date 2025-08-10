@@ -1,6 +1,7 @@
-local ext = require("os/lib/ext")
+local estring = require("os/lib/ext/string")
+local eio = require("os/lib/ext/io")
+local eui = require("os/lib/ext/ui")
 local api = require("os/lib/api")
-local bext = require("os/lib/basalt/bext")
 local config = require("os/config")
 local const = require("os/const")
 
@@ -20,12 +21,12 @@ local function chatApp(parent, appdata_path, callback)
     local function scrollChatboxToBottom()
         local lines = chat_textfield:getText()
         local height = chat_textfield:getHeight()
-        local offset = math.max(0, #ext.split(lines, '\n') - height + 2)
+        local offset = math.max(0, #estring.split(lines, '\n') - height + 2)
         chat_textfield:setScrollY(offset)
     end
 
     local function saveUserMap(data)
-        ext.withSafeFile(users_path, "w", function(file)
+        eio.withSafeFile(users_path, "w", function(file)
             file.write("return "..textutils.serialize(data))
         end)
     end
@@ -33,9 +34,9 @@ local function chatApp(parent, appdata_path, callback)
     local function shrinkChatData(dir_path)
         local active_file_path = dir_path.."/active.txt"
         if fs.exists(active_file_path) and fs.getSize(active_file_path) > config.settings.max_msg_archive_file_size then
-            ext.archiveFile(active_file_path, dir_path.."/archive.txt", api.getIRLLocalTimestamp())
+            eio.archiveFile(active_file_path, dir_path.."/archive.txt", api.getIRLLocalTimestamp())
         end
-        ext.truncateArchiveDir(global_dir_path, config.settings.max_msg_archive_files)
+        eio.truncateArchiveDir(global_dir_path, config.settings.max_msg_archive_files)
     end
 
     local function setup()
@@ -52,7 +53,7 @@ local function chatApp(parent, appdata_path, callback)
         end
 
         if not fs.exists(users_path) then
-            ext.withSafeFile(users_path, "w", function(file)
+            eio.withSafeFile(users_path, "w", function(file)
                 file.write("return "..textutils.serialize({usermap = {}}))
             end)
         end
@@ -64,7 +65,7 @@ local function chatApp(parent, appdata_path, callback)
         local text = chat_textfield:getText()
 
         local new_text = ""
-        for _, line in ipairs(ext.wordWrap(msg, chat_textfield:getWidth() - #prefix)) do
+        for _, line in ipairs(estring.wordWrap(msg, chat_textfield:getWidth() - #prefix)) do
             new_text = new_text .. prefix .. line .. "\n"
         end
         chat_textfield:setText(text..new_text)
@@ -100,7 +101,7 @@ local function chatApp(parent, appdata_path, callback)
         else mode = "w"
         end
 
-        ext.withSafeFile(active_file_path, mode, function(file)
+        eio.withSafeFile(active_file_path, mode, function(file)
             file.writeLine(data)
         end)
 
@@ -179,7 +180,7 @@ local function chatApp(parent, appdata_path, callback)
         :setBackground("{self.clicked and colors.lightGray or colors.blue}")
 
     local title_label = title_frame:addLabel()
-        :setPosition(ext.getCenterPos(title_frame:getWidth(), #"Global") - chat_select_button:getWidth() + 1, 1)
+        :setPosition(eui.getCenterPos(title_frame:getWidth(), #"Global") - chat_select_button:getWidth() + 1, 1)
         :setText(current_group:sub(1, 1):upper() .. current_group:sub(2))
         :setForeground(colors.white)
 
@@ -228,7 +229,7 @@ local function chatApp(parent, appdata_path, callback)
     --     :setText("!")
     --     :setPosition()
 
-    ext.withSafeFile(global_dir_path.."/active.txt", "r", function(file)
+    eio.withSafeFile(global_dir_path.."/active.txt", "r", function(file)
         if not file then return end
 
         local contents = file.readAll()

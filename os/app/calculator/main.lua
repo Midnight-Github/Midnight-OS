@@ -1,4 +1,7 @@
-local ext = require("os/lib/ext")
+local eutils = require("os/lib/ext/utils")
+local etable = require("os/lib/ext/table")
+local estring = require("os/lib/ext/string")
+local eui = require("os/lib/ext/ui")
 local config = require("os/app/calculator/config")
 
 local function calculatorApp(parent, appdata_path, callback)
@@ -32,7 +35,7 @@ local function calculatorApp(parent, appdata_path, callback)
         ce  = function(input, result) return "", "" end,
         c   = function(input, result) return result, "" end,
         ["="] = function(input, result)
-            local evalResult = ext.eval(input, safe_env)
+            local evalResult = eutils.eval(input, safe_env)
             if evalResult == nil then
                 return input, "Err"
             else
@@ -56,7 +59,7 @@ local function calculatorApp(parent, appdata_path, callback)
     for i=0,9 do
         button_display_logic[tostring(i)] = function(input, result) return input..tostring(i), result end
     end
-    ext.extend(button_display_logic, config.common.button_display_logic) -- adding/overriding logic from config
+    etable.extend(button_display_logic, config.common.button_display_logic) -- adding/overriding logic from config
 
     -- Function
     local function update()
@@ -65,7 +68,7 @@ local function calculatorApp(parent, appdata_path, callback)
     end
 
     local function wordWrap(text, width)
-        local lines = ext.wordWrap(text, width)
+        local lines = estring.wordWrap(text, width)
         return table.concat(lines, "\n")
     end
 
@@ -99,7 +102,7 @@ local function calculatorApp(parent, appdata_path, callback)
     local button_frame_width = #button_display_text_presets[1][1]*4 - 1
     local button_frame_height = #button_display_text_presets[1]*2 - 1
     local button_frame = main_frame:addFrame()
-        :setPosition(ext.getCenterPos(main_frame:getWidth(), button_frame_width), main_frame:getHeight() - button_frame_height + 1)
+        :setPosition(eui.getCenterPos(main_frame:getWidth(), button_frame_width), main_frame:getHeight() - button_frame_height + 1)
         :setSize(button_frame_width, button_frame_height)
         :setBackground(colors.black)
 

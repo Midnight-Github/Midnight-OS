@@ -1,4 +1,6 @@
-local ext = require("os/lib/ext")
+local estring = require("os/lib/ext/string")
+local eui = require("os/lib/ext/ui")
+local ebool = require("os/lib/ext/bool")
 local bext = require("os/lib/basalt/bext")
 local api = require("os/lib/api")
 
@@ -34,7 +36,7 @@ local function waystoneApp(parent, appdata_path, callback)
 
     local name_box_size = math.floor(add_waystone_frame:getWidth() * 2 / 5 - 3)
     local coord_box_size = math.min(math.floor((add_waystone_frame:getWidth() * 2 / 5) / 3), 7)
-    local coord_input_indent = ext.repeatString(" ", ext.getCenterPos(coord_box_size, 1) - 1)
+    local coord_input_indent = estring.repeatString(" ", eui.getCenterPos(coord_box_size, 1) - 1)
 
     local input_name = add_waystone_frame:addInput()
         :setPosition(1, 1)
@@ -42,7 +44,7 @@ local function waystoneApp(parent, appdata_path, callback)
         :setBackground(colors.gray)
         :setFocusedBackground(colors.gray)
         :setForeground(colors.white)
-        :setPlaceholder(ext.repeatString(" ", ext.getCenterPos(name_box_size, 4) - 1).."Name")
+        :setPlaceholder(estring.repeatString(" ", eui.getCenterPos(name_box_size, 4) - 1).."Name")
         :setPlaceholderColor(colors.lightGray)
 
     local input_x = add_waystone_frame:addInput()
@@ -86,7 +88,7 @@ local function waystoneApp(parent, appdata_path, callback)
         :setBackground("{self.clicked and colors.lightGray or colors.black}")
         :setForeground(colors.cyan)
         :onClickUp(function()
-            if ext.iall({api.getDynamicData("x_coord"), api.getDynamicData("y_coord"), api.getDynamicData("z_coord")}) then
+            if ebool.iall({api.getDynamicData("x_coord"), api.getDynamicData("y_coord"), api.getDynamicData("z_coord")}) then
                 return
             end
             input_x:setText(api.getDynamicData("x_coord"))
